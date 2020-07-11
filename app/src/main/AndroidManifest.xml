@@ -16,7 +16,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+<<<<<<< HEAD
 
+=======
+>>>>>>> dbd352d35e67abd5a20aee914e66bd5409131c71
     </application>
 
 </manifest>

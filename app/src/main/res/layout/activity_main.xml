@@ -59,6 +59,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_weight="1"
+<<<<<<< HEAD
         android:layout_height="match_parent"
         android:orientation="vertical">
 
@@ -66,10 +67,20 @@
             android:id="@+id/editTextTextPersonName"
             android:layout_width="match_parent"
             android:layout_height="70dp"
+=======
+ >
+
+        <EditText
+            android:id="@+id/editTextTextPersonName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+>>>>>>> dbd352d35e67abd5a20aee914e66bd5409131c71
             android:ems="10"
             android:inputType="textPersonName"
             android:paddingLeft="20dp"
             android:text="내가 설정한 매크로"
+<<<<<<< HEAD
             android:textSize="25sp" />
 
         <ListView
@@ -78,5 +89,8 @@
             android:layout_height="match_parent" />
 
 
+=======
+            android:textSize="20sp" />
+>>>>>>> dbd352d35e67abd5a20aee914e66bd5409131c71
     </LinearLayout>
 </LinearLayout>
