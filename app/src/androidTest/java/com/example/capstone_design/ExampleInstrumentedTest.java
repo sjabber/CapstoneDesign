@@ -1,4 +1,4 @@
-package com.example.capstom_design;
+package com.example.capstone_design;
 
 import android.content.Context;
 

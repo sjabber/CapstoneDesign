@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.capstom_design">
+    package="com.example.capstone_design">
+
+<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+
 
     <application
         android:allowBackup="true"
@@ -16,10 +19,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<<<<<<< HEAD
+        <activity android:name=".AddActivity"></activity>
 
-=======
->>>>>>> dbd352d35e67abd5a20aee914e66bd5409131c71
+        <service
+            android:name=".TopLayerView"
+            android:enabled="true"
+            android:permission="andorid.permission.SYSTEM_ALERT_WINDOW">
+        </service>
     </application>
+
 
 </manifest>

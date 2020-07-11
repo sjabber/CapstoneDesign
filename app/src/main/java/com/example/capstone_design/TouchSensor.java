@@ -1,29 +1,20 @@
-package com.example.capstom_design;
+package com.example.capstone_design;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-<<<<<<< HEAD
 import android.content.Context;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
-
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-//    }
+public class TouchSensor extends AppCompatActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
 
-        View view = new MyView( this);
+        View view = new TouchSensor.MyView(this);
         setContentView(view);
     }
 
@@ -42,39 +33,26 @@ public class MainActivity extends AppCompatActivity {
             //event
             //event 종류/각각의 특성
 
-            if(event.getAction() == MotionEvent.ACTION_DOWN ){
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
                 float x = event.getX();
                 float y = event.getY();
 
-                String msg = "터치를 입력받음 : " +x+" / " +y;
+                String msg = "터치를 입력받음 : " + x + " / " + y;
 
-                Toast. makeText(MainActivity. this, msg, Toast.LENGTH_SHORT ).show();
+                Toast.makeText(TouchSensor.this, msg, Toast.LENGTH_SHORT).show();
                 return true;
             }
 
             return false;
         }
-
-
     }
 
-//    @Override
+    //    @Override
+//      블로그에서 퍼온 찌거기 자료
 //    public boolean onCreateOptionsMenu(Menu menu) {
 //        // Inflate the menu; this adds items to the action bar if it is present.
 //        getMenuInflater().inflate(R.layout.activity_test, menu);
 //        return true;
 //    }
-
-=======
-import android.os.Bundle;
-
-public class MainActivity extends AppCompatActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-    }
->>>>>>> dbd352d35e67abd5a20aee914e66bd5409131c71
 }

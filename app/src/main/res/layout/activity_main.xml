@@ -58,39 +58,33 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_weight="1"
-<<<<<<< HEAD
         android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:baselineAligned="false"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/editTextTextPersonName"
+        <TextView
+            android:id="@+id/editTextTextPersonName2"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
-=======
- >
-
-        <EditText
-            android:id="@+id/editTextTextPersonName"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
->>>>>>> dbd352d35e67abd5a20aee914e66bd5409131c71
-            android:ems="10"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:inputType="textPersonName"
-            android:paddingLeft="20dp"
-            android:text="내가 설정한 매크로"
-<<<<<<< HEAD
-            android:textSize="25sp" />
+            android:text="내  매크로 목록"
+            android:textAllCaps="false"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColorLink="#000000"
+            android:textSize="25dp" />
 
-        <ListView
-            android:id="@+id/list_favorites"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        <!--        <ListView-->
+        <!--            android:id="@+id/list_favorites"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            android:layout_weight="1"-->
+        <!--            android:paddingLeft="20dp"-->
+        <!--            android:text="내가 설정한 매크로"-->
+        <!--            android:textSize="25sp">-->
+        <!--        </ListView>-->
 
-
-=======
-            android:textSize="20sp" />
->>>>>>> dbd352d35e67abd5a20aee914e66bd5409131c71
     </LinearLayout>
 </LinearLayout>
