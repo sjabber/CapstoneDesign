@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class MacroDBHelper extends SQLiteOpenHelper {
 
-    private static final String DB_NAME = "Macro";
+    private static final String DB_NAME = "Macro_DB";
 
     public MacroDBHelper(Context context) {
         super(context, DB_NAME, null, 1);

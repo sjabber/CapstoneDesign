@@ -9,6 +9,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,13 +22,17 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
+
 
 public class MainActivity extends AppCompatActivity {
 
-    ListView list1;
     MacroDBHelper helper;
-    SQLiteDatabase db;
-    Cursor c;
+    SQLiteDatabase db; // DB를 다루기 위한 SQLiteDabase 객체 생성
+    Cursor cursor; // Select문 출력을 위해 사용하는 Cursor 형태객체 생성
+    ListView listview; // Listview 객체 생성
+    String[] result; //ArrayAdapter에 넣을 배열을 생성한다.
+    String sql;
 
 
     @Override
@@ -35,18 +40,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        String [] str1 = {
-//                "매크로 1",
-//                "매크로 2",
-//                "매크로 3",
-//                "매크로 4",
-//                "매크로 5",
-//                "매크로 6",
-//                "매크로 7",
-//                "매크로 8"
-//        };
-
-                //액티비티 전환
+        //액티비티 전환
         //뷰(버튼)의 주소값을 얻어온다.
         // 뷰의 주소값을 담을 참조변수 button1
         Button button1 = (Button)findViewById(R.id.button1);
@@ -56,20 +50,40 @@ public class MainActivity extends AppCompatActivity {
         button1.setOnClickListener(listener1);
 
         // 리스트뷰를 더한다.
-        list1 = (ListView)findViewById(R.id.list1);
-        try{
-            SQLiteOpenHelper MacroDBHelper = new MacroDBHelper(this);
-            db = MacroDBHelper.getReadableDatabase();
-            c = db.query("Macro",
-                    new String[]{"_id", "Mac_num", "Mac_name"},
-                    null, null, null, null, null);
+        db = openOrCreateDatabase("Macro_DB", MODE_PRIVATE, null);
+        listview = (ListView)findViewById(R.id.Mac_List);
 
-            CursorAdapter adapter =
-                    new SimpleCursorAdapter(MainActivity.this,
-                        R.layout.list1, c,
-                        new String[]{"Mac_name"},
-                        new int[]{android.R.id.text1}, 0);
-            list1.setAdapter(adapter);
+        try{
+            sql = "SELECT * FROM Macro";
+            cursor = db.rawQuery(sql, null); // select 사용시 사용됨
+
+            int count = cursor.getCount(); //db에 저장된 행 개수를 읽어온다.
+            result = new String[count];
+
+            for(int i = 0; i < count; i++) {
+                cursor.moveToNext(); // 모든 레코드를 읽어온다.
+                String name = cursor.getString(1);
+                result[i] =name;
+            }
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.list1, R.id.textView_list, result);
+            Log.d("TEST1", "문제 발생지점");
+            listview.setAdapter(adapter);
+
+//            SQLiteOpenHelper MacroDBHelper = new MacroDBHelper(this);
+//            db = MacroDBHelper.getReadableDatabase();
+//            c = db.query("Macro",
+//                    new String[]{"_id", "Mac_num", "Mac_name"},
+//                    null, null, null, null, null);
+//
+//            CursorAdapter adapter =
+//                    new SimpleCursorAdapter(MainActivity.this,
+//                        R.layout.list1, c,
+//                        new String[]{"Mac_name"},
+//                        new int[]{android.R.id.text1}, 0);
+//            listview.setAdapter(adapter);
+
+
         }
 
         catch (SQLException e) {
@@ -78,6 +92,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void onRestart() {
+        super.onRestart();
+
+        try {
+            sql = "SELECT * FROM Macro";
+            cursor = db.rawQuery(sql, null); // select 사용시 사용됨
+
+            int count = cursor.getCount(); //db에 저장된 행 개수를 읽어온다.
+            result = new String[count];
+
+            for (int i = 0; i < count; i++) {
+                cursor.moveToNext(); // 모든 레코드를 읽어온다.
+                String name = cursor.getString(1);
+                result[i] = name;
+            }
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.list1, R.id.textView_list, result);
+            Log.d("TEST1", "문제 발생지점");
+            listview.setAdapter(adapter);
+
+        } catch (SQLException e) {
+            Toast toast = Toast.makeText(this, "데이터베이스가 로드되지 않았습니다.", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
 
     // 옵션 메뉴
     @Override

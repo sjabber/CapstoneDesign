@@ -59,8 +59,15 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
         String sql = "INSERT INTO Macro (Mac_name) VALUES (?)";
         String[] arg = {MacroName};
 
-        db.execSQL(sql, arg);
-        Toast.makeText(getApplicationContext(), "추가되었습니다.", Toast.LENGTH_SHORT).show();
+        try{
+            db.execSQL(sql, arg);
+            Toast.makeText(getApplicationContext(), "추가되었습니다.", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), "데이터베이스 오류", Toast.LENGTH_SHORT).show();
+        }
+
+
+
 
         // 버튼이 눌리면 위의 작업과 함께 Floatting window도 실행된다.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
