@@ -20,13 +20,16 @@
             </intent-filter>
         </activity>
         <activity android:name=".AddActivity"></activity>
+        <activity android:name=".Setting"></activity>
+        <activity android:name=".Setting_name"></activity>
+
+
 
         <service
-            android:name=".TopLayerView"
+            android:name=".FloatingViewService"
             android:enabled="true"
-            android:permission="andorid.permission.SYSTEM_ALERT_WINDOW">
-        </service>
+            android:permission="android.permission.SYSTEM_ALERT_WINDOW"
+            android:exported="false" />
     </application>
-
 
 </manifest>
