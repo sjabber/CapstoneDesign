@@ -2,7 +2,9 @@ package com.example.capstone_design;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.AsyncListDiffer;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -10,6 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,19 +23,23 @@ import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import java.lang.reflect.Array;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    MacroDBHelper helper;
     SQLiteDatabase db; // DB를 다루기 위한 SQLiteDabase 객체 생성
     Cursor cursor; // Select문 출력을 위해 사용하는 Cursor 형태객체 생성
     ListView listview; // Listview 객체 생성
+    TextView textview;
     String[] result; //ArrayAdapter에 넣을 배열을 생성한다.
     String sql;
+
+    String [] data1 = {
+            "항목1", "항목2", "항목3", "항목4", "항목5"
+    };
 
 
     @Override
@@ -52,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         // 리스트뷰를 더한다.
         db = openOrCreateDatabase("Macro_DB", MODE_PRIVATE, null);
         listview = (ListView)findViewById(R.id.Mac_List);
+        textview = (TextView)findViewById(R.id.Mac_List_Text);
 
         try{
             sql = "SELECT * FROM Macro";
@@ -66,23 +74,13 @@ public class MainActivity extends AppCompatActivity {
                 result[i] =name;
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.list1, R.id.textView_list, result);
-            Log.d("TEST1", "문제 발생지점");
-            listview.setAdapter(adapter);
-
-//            SQLiteOpenHelper MacroDBHelper = new MacroDBHelper(this);
-//            db = MacroDBHelper.getReadableDatabase();
-//            c = db.query("Macro",
-//                    new String[]{"_id", "Mac_num", "Mac_name"},
-//                    null, null, null, null, null);
-//
-//            CursorAdapter adapter =
-//                    new SimpleCursorAdapter(MainActivity.this,
-//                        R.layout.list1, c,
-//                        new String[]{"Mac_name"},
-//                        new int[]{android.R.id.text1}, 0);
+//            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.list1, R.id.textView_list, result);
 //            listview.setAdapter(adapter);
 
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, result);
+            listview.setAdapter(adapter);
+            // list1 레이아웃에 속한 textView의 id를 listview 객체(Main 레아아웃의 리스트 아이디 Mac_List 를 가진)에
+            // 대입시키고 이에 쿼리결과인 result를 대입한다.
 
         }
 
@@ -90,6 +88,11 @@ public class MainActivity extends AppCompatActivity {
             Toast toast = Toast.makeText(this, "데이터베이스가 로드되지 않았습니다.", Toast.LENGTH_SHORT);
             toast.show();
         }
+
+        // 뷰에 컨텍스트 메뉴를 설정한다.
+        registerForContextMenu(textview);
+        registerForContextMenu(listview); // 리스트뷰를 길게 누르면 컨텍스트 메뉴가 나온다.
+        Log.d("Problem", "컨텍스트메뉴 문제발생지점");
     }
 
     public void onRestart() {
@@ -107,14 +110,83 @@ public class MainActivity extends AppCompatActivity {
                 String name = cursor.getString(1);
                 result[i] = name;
             }
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.list1, R.id.textView_list, result);
-            Log.d("TEST1", "문제 발생지점");
+
+//            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.list1, R.id.textView_list, result);
+//            listview.setAdapter(adapter);
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, result);
             listview.setAdapter(adapter);
 
-        } catch (SQLException e) {
+        }
+
+        catch (SQLException e) {
             Toast toast = Toast.makeText(this, "데이터베이스가 로드되지 않았습니다.", Toast.LENGTH_SHORT);
             toast.show();
         }
+
+        // 뷰에 컨텍스트 메뉴를 설정한다.
+        registerForContextMenu(textview);
+        registerForContextMenu(listview); // 리스트뷰를 길게 누르면 컨텍스트 메뉴가 나온다.
+    }
+
+    // 컨텍스트 메뉴가 설정되어 있는 뷰를 길게 누르면 컨텍스트 메뉴 구성을 위해서 호출하는 메서드드
+   @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+
+        int view_id = v.getId();
+
+        switch(view_id) {
+            case R.id.Mac_List_Text :
+                inflater.inflate(R.menu.context_menu, menu);
+                break;
+
+            case R.id.Mac_List :
+                AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+                menu.setHeaderTitle("리스트 뷰의 메뉴 : " + info.position);
+                inflater.inflate(R.menu.context_menu, menu);
+                break;
+        }
+
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+
+        // 사용자가 선택한 메뉴 항목의 id를 추출
+        int id = item.getItemId();
+
+        // 컨텍스트메뉴 리스트의 인덱스를 가지고 있는 객체를 추출
+        ContextMenu.ContextMenuInfo info1 = item.getMenuInfo();
+        int position = 0;
+        if(info1 != null && info1 instanceof AdapterView.AdapterContextMenuInfo) {
+            AdapterView.AdapterContextMenuInfo info2 = (AdapterView.AdapterContextMenuInfo)info1;
+            position = info2.position;
+        }
+
+//        switch (id) {
+//            // 컨텍스트 메뉴의 수정버튼을 눌렀을 경우 동작하는 내용
+//            case R.id.Edit_Mac :
+//
+//
+//                break;
+//            // 컨텍스트 메뉴의 삭제버튼을 눌렀을 경우 동작하는 내용
+//            case R.id.Delete_Mac :
+//                try {
+//                    sql = "DELETE FROM Macro WHERE Mac_num ="
+//                            + position;
+//                    db.execSQL(sql);
+//                    Toast toast = Toast.makeText(this, "매크로가 삭제되었습니다.", Toast.LENGTH_SHORT);
+//                    toast.show();
+//
+//                } catch (SQLException e) {
+//
+//                }
+//
+//                break;
+//        }
+        return super.onContextItemSelected(item);
     }
 
     // 옵션 메뉴
@@ -153,6 +225,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
     }
+
 }
 
 

@@ -10,18 +10,18 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="178dp">
+        android:layout_height="150dp">
 
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="match_parent"
-            android:layout_height="190dp"
+            android:layout_height="162dp"
             app:srcCompat="@drawable/first" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="145dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <TextView
@@ -35,8 +35,8 @@
 
         <TextView
             android:id="@+id/textView2"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:gravity="center"
@@ -64,7 +64,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/editTextTextPersonName2"
+            android:id="@+id/Mac_List_Text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
@@ -87,7 +87,6 @@
             android:id="@+id/Mac_List"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
         </ListView>
 
 
