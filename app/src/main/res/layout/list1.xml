@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:descendantFocusability="blocksDescendants">
 
     <TextView
         android:id="@+id/textView_list"
@@ -17,11 +18,13 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     <Switch
-        android:id="@+id/switch_list"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:id="@+id/switch1"
         android:layout_width="50dp"
         android:layout_height="30dp"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="6dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="10dp" />
 </LinearLayout>

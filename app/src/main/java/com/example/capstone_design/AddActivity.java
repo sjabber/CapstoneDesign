@@ -7,9 +7,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+
 
 public class AddActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int SYSTEM_ALERT_WINDOW_PERMISSION = 2084;
@@ -27,6 +30,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
         //데이터베이스 변수 선언
         helper = new MacroDBHelper(this);
         db = helper.getWritableDatabase();
+
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !Settings.canDrawOverlays(this)) {
@@ -56,18 +60,20 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 
         //입력받은 값을 Macro 테이블 Mac_name 애트리뷰트에 추가한다.
         String MacroName = EditName.getText().toString();
-        String sql = "INSERT INTO Macro (Mac_name) VALUES (?)";
+        String sql1 = "INSERT INTO Macro (Mac_name) VALUES (?)";
+        String sql2 = "SELECT Mac_name FROM Macro WHERE Mac_name IN"
+                    +"(SELECT Mac_name FROM Macro GROUP BY Mac_name HAVING COUNT(*)>1)";
         String[] arg = {MacroName};
 
+
         try{
-            db.execSQL(sql, arg);
+            db.execSQL(sql1, arg);
             Toast.makeText(getApplicationContext(), "추가되었습니다.", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), "데이터베이스 오류", Toast.LENGTH_SHORT).show();
+                Log.d("Problem1", "쿼리문제 발생지점");
+                Toast.makeText(getApplicationContext(), "데이터베이스 오류", Toast.LENGTH_SHORT).show();
+
         }
-
-
-
 
         // 버튼이 눌리면 위의 작업과 함께 Floatting window도 실행된다.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {

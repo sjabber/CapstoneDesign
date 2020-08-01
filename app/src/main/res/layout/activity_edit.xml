@@ -11,27 +11,27 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/textView2_1"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="30dp"
             android:layout_marginRight="30dp"
-            android:text="@string/textView2"
+            android:text="내 매크로 이름 수정"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textSize="30sp"
             android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/EditMacroName"
+            android:id="@+id/EditMacroName_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="50dp"
             android:layout_marginRight="20dp"
             android:ems="10"
-            android:hint="@string/EditMacroName"
+            android:hint=" 수정할 호출 명령어 이름을 입력해 주세요."
             android:inputType="textPersonName" />
 
     </LinearLayout>
@@ -42,20 +42,20 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/textView5_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:text="@string/textView5" />
+            android:text="한글 2자 이상 5자 이내 / 영문, 숫자, 특수기호 불가" />
 
         <Button
-            android:id="@+id/saveButton"
+            android:id="@+id/editButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="25dp"
             android:layout_marginTop="50dp"
             android:layout_marginRight="25dp"
-            android:text="@string/saveButton" />
+            android:text="수정" />
     </LinearLayout>
 
 </LinearLayout>

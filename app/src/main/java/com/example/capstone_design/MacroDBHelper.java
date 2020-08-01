@@ -18,11 +18,11 @@ public class MacroDBHelper extends SQLiteOpenHelper {
 
         String sql = "CREATE TABLE Macro("
                 + "Mac_num INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + "Mac_name TEXT not null)";
-               // + "Mac_act BOOL not null)";
+                + "Mac_name TEXT UNIQUE, "
+                + "CONSTRAINT CK_NAME CHECK (Mac_name != NULL))";
+                // + "Mac_act BOOL not null)";
 
         db.execSQL(sql);
-
     }
 
     @Override
