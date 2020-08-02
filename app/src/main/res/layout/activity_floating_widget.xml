@@ -14,6 +14,34 @@
         tools:ignore="UselessParent">
 
         <!-- this is the collapsed layout -->
+        <RelativeLayout
+            android:id="@+id/layoutCollapsed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:background="#00FFFFFF"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/buttonRecord"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="#00FFFFFF"
+                android:src="@drawable/dot" />
+
+            <ImageView
+                android:id="@+id/buttonClose"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginLeft="40dp"
+                android:background="#00FFFFFF"
+                android:foregroundTint="#FFFFFF"
+                android:src="@drawable/close2" />
+        </RelativeLayout>
+
+        <!-- this is the expanded layout -->
         <LinearLayout
             android:id="@+id/layoutExpanded"
             android:layout_width="wrap_content"
@@ -23,40 +51,40 @@
             android:padding="8dp"
             android:visibility="gone">
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/buttonStop"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:background="#00FFFFFF"
                 android:src="@drawable/stop"
                 tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/buttonStart"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginLeft="5dp"
+                android:background="#00FFFFFF"
+                android:src="@drawable/start"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/buttonBack"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginLeft="5dp"
+                android:background="#00FFFFFF"
+                android:src="@drawable/back" />
+
+            <ImageView
+                android:id="@+id/buttonClose2"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginLeft="5dp"
+                android:background="#00FFFFFF"
+                android:src="@drawable/close2" />
+
         </LinearLayout>
 
-        <!-- this is the expanded layout -->
-        <RelativeLayout
-            android:id="@+id/layoutCollapsed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00FFFFFF"
-            android:orientation="vertical"
-            android:visibility="visible">
-
-            <ImageView
-                android:id="@+id/buttonRecord"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginTop="8dp"
-                android:background="#00FFFFFF"
-                android:src="@drawable/dot" />
-
-            <ImageView
-                android:id="@+id/buttonClose"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:layout_marginLeft="47dp"
-                android:background="#00FFFFFF"
-                android:foregroundTint="#FFFFFF"
-                android:src="@drawable/close2" />
-        </RelativeLayout>
     </RelativeLayout>
 </FrameLayout>

@@ -146,8 +146,7 @@ public class MainActivity extends AppCompatActivity {
             AdapterView.AdapterContextMenuInfo info2 = (AdapterView.AdapterContextMenuInfo)info1;
             position = info2.position;
 
-            //Test
-            // TODO: 2020-07-31
+            // EditActivity 클래스에서도 사용돼야해서 중요함.
             PositionNumber = info2.position;
         }
 
@@ -298,12 +297,6 @@ public class MainActivity extends AppCompatActivity {
             listview.setAdapter(adapter);
         }
     }
-
-//    public class PositionValueSave {
-//        public void PositionValue() {
-//            int value = PositionNumber;
-//        }
-//    }
 
 
     //항목에 배치된 스위치에 셋팅할 리스너
