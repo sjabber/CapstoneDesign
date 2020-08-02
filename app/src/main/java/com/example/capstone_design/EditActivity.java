@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -50,12 +51,15 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 
         try{
             db.execSQL(sql, arg);
-            Toast.makeText(getApplicationContext(), "수정되었습니다.", Toast.LENGTH_SHORT).show();
+            Toast toast = Toast.makeText(getApplicationContext(), "수정되었습니다.", Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.LEFT|Gravity.BOTTOM, 330, 180);
+            toast.show();
             Intent intent = new Intent(EditActivity.this, MainActivity.class);
             startActivity(intent);
         }
         catch (Exception e) {
-            Toast.makeText(getApplicationContext(), "오류발생", Toast.LENGTH_SHORT).show();
+            Toast toast =Toast.makeText(getApplicationContext(), "오류발생", Toast.LENGTH_SHORT);
+            toast.show();
         };
 
     }
