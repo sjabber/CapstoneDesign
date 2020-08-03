@@ -2,15 +2,15 @@ package com.example.capstone_design;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.AsyncListDiffer;
 
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -23,20 +23,18 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.Checkable;
 import android.widget.CompoundButton;
-import android.widget.CursorAdapter;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
-import java.util.List;
-
-import javax.crypto.Mac;
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -50,7 +48,13 @@ public class MainActivity extends AppCompatActivity {
     String[] result; //ArrayAdapter에 넣을 배열을 생성한다.
     String sql;
     ListUpdate update;
+
+
+
+
     public static int PositionNumber;
+    public static int SwitchPosition;
+    private View Customlistview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +63,47 @@ public class MainActivity extends AppCompatActivity {
 
         //액티비티 전환
         //뷰(버튼)의 주소값을 얻어온다.
-        // 뷰의 주소값을 담을 참조변수 button1
+        // 뷰의 주소값을 담을 참조변수
         Button button1 = (Button)findViewById(R.id.button1);
+
+        //Switch Switch_1 = (Switch)findViewById(R.id.switch1);
+
+        //커스텀 리스트뷰 객체 호출 -> 메모리적재
+        Customlistview = LayoutInflater.from(this).inflate(R.layout.list1, null);
+        final Switch SwitchButton = Customlistview.findViewById(R.id.switch1);
+
+        final onClickSwitch SwitchListener1 = new onClickSwitch();
+
+
+        // 작동 제대로 안되는 코드
+        //// TODO: 2020-08-03
+        SwitchButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                int position = (Integer) buttonView.getId();
+
+                SwitchListener1.onClick(SwitchButton);
+                int clickSwitch = (int) R.id.switch1;
+                Toast.makeText(MainActivity.this, "매크로 활성화", Toast.LENGTH_SHORT).show();
+                Log.d("스위치", "on버튼");
+
+                if (SwitchPosition == clickSwitch) {
+                if (isChecked) {
+                    Toast.makeText(MainActivity.this, "매크로 활성화", Toast.LENGTH_SHORT).show();
+                    Log.d("스위치", "on버튼");
+                } else {
+                    Toast.makeText(MainActivity.this, "매크로 비활성화", Toast.LENGTH_SHORT).show();
+                  }
+                }
+            }
+        });
+
+
         // 리스너 객체를 생성
         BtnListener1 listener1 = new BtnListener1();
+
 
         // 리스너를 버튼 객체에 설정한다.
         button1.setOnClickListener(listener1);
@@ -120,7 +161,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getMenuInflater();
 
-        int view_id = v.getId();
+        final int view_id = v.getId();
+
 
         switch(view_id) {
             case R.id.Mac_List :
@@ -236,8 +278,6 @@ public class MainActivity extends AppCompatActivity {
 
     class ListAdapter extends BaseAdapter{
 
-        SwitchListener listener3 = new SwitchListener();
-
         @Override
         public int getCount() {
             return result.length;
@@ -299,28 +339,53 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //항목에 배치된 스위치에 셋팅할 리스너
-    class SwitchListener implements CompoundButton.OnCheckedChangeListener {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            int id = buttonView.getId();
-            int position = (Integer)buttonView.getTag();
 
-            //test용이라 나중에 textview랑 같이 없앨부분분
-            switch (id){
-                case R.id.switch1 :
-                    textview.setText(position + "번 스위치");
-//                    if (isChecked) {
-//                        Toast toast = Toast.makeText(MainActivity.this, position+ "번 활성화 되었습니다.", Toast.LENGTH_SHORT);
-//                        toast.show();
-//                    }else{
-//                        Toast toast = Toast.makeText(MainActivity.this, position+ "번 비활성화 되었습니다.", Toast.LENGTH_SHORT);
-//                        toast.show();
-//                    }
-                    break;
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+    //아래 전부 테스팅용 클래스들 추후 삭제나 수정 등의 조취를 취할 예쩡
+    public class onClickSwitch implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            SwitchPosition = v.getId();
+        }
+
+//        public int onClickSwitch() {
+//            SwitchPosition = 0;
+//            return SwitchPosition;
+//        }
+    }
+
+    public class CheckableLinearLayout extends LinearLayout implements Checkable {
+        public CheckableLinearLayout(Context context, AttributeSet attrs) {
+            super(context, attrs);
+        }
+
+        @Override
+        // 현재 Checked 상태를 리턴한다.
+        public boolean isChecked() {
+            Switch sw = (Switch) findViewById(R.id.switch1);
+
+            return sw.isChecked();
+        }
+
+        // 현재 Checked 상태를 바꿈 (UI에 반영)
+        @Override
+        public void toggle() {
+            Switch sw = (Switch) findViewById(R.id.switch1);
+            setChecked(sw.isChecked() ? false : true);
+        }
+
+        // Checked 상태를 checked 변수대로 설정한다.
+        @Override
+        public void setChecked(boolean checked) {
+            Switch sw = (Switch) findViewById(R.id.switch1);
+            if (sw.isChecked() != checked) {
+                sw.setChecked(checked);
             }
         }
     }
+    //추가된 내용들 끝
 
     //Log.d("Problem", "컨텍스트메뉴 문제발생지점"); -> 문제발생시 위치확인용으로 쓸 로그문 추후 삭제
 }
