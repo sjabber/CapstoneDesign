@@ -1,7 +1,6 @@
 package com.example.capstone_design;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -9,9 +8,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -22,14 +19,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-//import android.widget.BaseAdapter; -> BaseAdapter 에서 ArrayAdapter 로 변경됨
 import android.widget.Button;
-import android.widget.Checkable;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -50,12 +43,11 @@ public class MainActivity extends AppCompatActivity {
     ListUpdate update;
     CustomAdapter customAdapter;
     ArrayList<String> items;
-    //SwitchListener check;
+    ArrayList<Integer> item_Position;
     SharedPreferences mPrefs;
     Switch Switch1;
 
     public static int PositionNumber;
-    public static int SwitchPosition;
     private View Customlistview;
     private View Customlistview2;
     private int SwitchNum;
@@ -67,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // 스위치 리스너 객체를 생성
-       // check = new SwitchListener();
+        // check = new SwitchListener();
 
         //todo 위치1
         // Shared Preference를 불러온다.
@@ -96,6 +88,9 @@ public class MainActivity extends AppCompatActivity {
 
         // 추가하기 버튼의 리스너를 버튼 객체에 설정한다.
         button1.setOnClickListener(listener1);
+
+        items = new ArrayList<>();
+        item_Position = new ArrayList<>();
 
         // 리스트 갱신 객체를 생성
         update = new ListUpdate();
@@ -148,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
         registerForContextMenu(listview); // 리스트뷰를 길게 누르면 컨텍스트 메뉴가 나온다.
     }
 
-    // TODO: 2020-08-06  
+    // TODO: 2020-08-06
     public void onStop() {
         super.onStop();
         mPrefs = getSharedPreferences("mPrefs", MODE_PRIVATE);
@@ -170,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 컨텍스트 메뉴가 설정되어 있는 뷰를 길게 누르면 컨텍스트 메뉴 구성을 위해서 호출하는 메서드드
-   @Override
+    @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getMenuInflater();
@@ -263,18 +258,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //옵션 메뉴의 항목을 터치하면 호출되는 메소드드
-   @Override
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         //사용자가 터치한 항목 객체의 id를 추출한다.
-       int id = item.getItemId();
-       //분기한다.
-       switch (id) {
-           case R.id.item1 :
-               Intent intent1 = new Intent(MainActivity.this, Setting.class);
-               startActivity(intent1);
+        int id = item.getItemId();
+        //분기한다.
+        switch (id) {
+            case R.id.item1 :
+                Intent intent1 = new Intent(MainActivity.this, Setting.class);
+                startActivity(intent1);
 
-       }
-       return super.onOptionsItemSelected(item);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     //추가하기 버튼과 연결될 리스너
@@ -327,6 +322,7 @@ public class MainActivity extends AppCompatActivity {
         //재사용 가능한 뷰가 없다면 뷰를 만들어준다.
         public View getView(final int position, View convertView, ViewGroup parent) {
             View v = convertView;
+            final int SwitchPosition = position;
             if (v == null) {
                 LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 v = inflater.inflate(R.layout.list1, null);
@@ -347,42 +343,76 @@ public class MainActivity extends AppCompatActivity {
                     sub_text.setText(result[position]);
                 }
 
+                // 스위치가 null이 아니라면
+                if (Switch1 != null) {
+                    // 상태가 변경되면 저장하는 부분
+                    Switch1.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            listview.setItemChecked(position, isChecked);
 
-
-            }
-            // 스위치가 null이 아니라면
-            if (Switch1 != null) {
-
-            }
-
-
-
-            //스위치버튼 클릭리스너를 넣어둔다.
-            Switch1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                //todo 스위치버튼
-                public void onClick(View v) {
-                    SwitchNum = position;
-                    int id = v.getId();
-                    switch (id) {
-                        case R.id.switch1 :
-                            if(Switch1.isChecked() == true) {
-                                Toast.makeText(MainActivity.this, (position + 1)+"번 매크로 활성화", Toast.LENGTH_SHORT).show();
-                                save1();
-                                Log.d("저장", "저장지점");
-
-                                break;
-
-                            } else if(Switch1.isChecked() != true) {
-                                Toast.makeText(MainActivity.this, (position + 1)+"번 매크로 비활성화", Toast.LENGTH_SHORT).show();
-                                load();
-                                Log.d("해제", "해제지점");
-                                break;
+                            if(isChecked) {
+                                // 체크를 할 때
+                                for(int i = 0; i < item_Position.size(); i++) {
+                                    if (item_Position.get(i) == SwitchPosition) {
+                                        //todo 분기점1
+                                        return;
+                                    }
+                                }
+                                item_Position.add(SwitchPosition);
+                            } else {
+                                //체크를 해제할 때
+                                for(int i = 0; i < item_Position.size(); i++) {
+                                    if (item_Position.get(i) == SwitchPosition) {
+                                        item_Position.remove(i);
+                                        break;
+                                    }
+                                }
                             }
+                        }
+                    });
+                    // 체크된 아이템인지 판단할 boolean 함수
+                    boolean isChecked = false;
+                    for (int i = 0; i < item_Position.size(); i++) {
+                        //만약 체크되었던 아이템이라면
+                        if(item_Position.get(i) == SwitchPosition) {
+                            Switch1.setChecked(true);
+                            isChecked = true;
+                            break;
+                        }
                     }
-                }
-            });
+                    // 아니라면 체크안하는 부분
+                    if (!isChecked) {
+                        Switch1.setChecked(false);
+                    }
 
+
+                    // 상태가 변경되면 반응하는 부분 -> 기능적인 메소드를 집어넣을 공간에 해당한다.
+                    Switch1.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        //todo 스위치버튼
+                        public void onClick(View v) {
+                            SwitchNum = position;
+                            int id = v.getId();
+                            switch (id) {
+                                case R.id.switch1 :
+                                    if(Switch1.isChecked() == true) {
+                                        Toast.makeText(MainActivity.this, (position + 1)+"번 매크로 활성화", Toast.LENGTH_SHORT).show();
+                                        Log.d("저장", "저장지점");
+
+                                        break;
+
+                                    } else if(Switch1.isChecked() != true) {
+                                        Toast.makeText(MainActivity.this, (position + 1)+"번 매크로 비활성화", Toast.LENGTH_SHORT).show();
+                                        Log.d("해제", "해제지점");
+                                        break;
+                                    }
+                            }
+                        }
+                    });
+                }
+
+            }
             return v;
         }
     }
@@ -411,93 +441,9 @@ public class MainActivity extends AppCompatActivity {
             customAdapter = new CustomAdapter(MainActivity.this, R.layout.list1, R.id.textView_list, items);
             customAdapter.notifyDataSetChanged();
             listview.setAdapter(customAdapter);
-            listview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+//            listview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         }
     }
-
-
-///////////////////////////////////////////////////////////////////////////////////////////
-    //아래 전부 테스팅용 클래스들 추후 삭제나 수정 등의 조취를 취할 예쩡
-
-
-    public class CheckableLinearLayout extends LinearLayout implements Checkable {
-        public CheckableLinearLayout(Context context, AttributeSet attrs) {
-            super(context, attrs);
-        }
-
-        @Override
-        // 현재 Checked 상태를 리턴한다.
-        public boolean isChecked() {
-            Switch sw = (Switch) findViewById(R.id.switch1);
-
-            return sw.isChecked();
-        }
-
-        // 현재 Checked 상태를 바꿈 (UI에 반영)
-        @Override
-        public void toggle() {
-            Switch sw = (Switch) findViewById(R.id.switch1);
-            setChecked(sw.isChecked() ? false : true);
-        }
-
-        // Checked 상태를 checked 변수대로 설정한다.
-        @Override
-        public void setChecked(boolean checked) {
-            Switch sw = (Switch) findViewById(R.id.switch1);
-            if (sw.isChecked() != checked) {
-                sw.setChecked(checked);
-            }
-        }
-    }
-    //todo 저장, 로드
-    private void save1() {
-        SharedPreferences.Editor editor = mPrefs.edit();
-        editor.putBoolean("Check" + SwitchNum, true);
-        editor.apply();
-        editor.commit();
-    }
-
-//    private void save2() {
-//        SharedPreferences.Editor editor = mPrefs.edit();
-//
-//        editor.putBoolean("Check" + SwitchNum, Switch1.isChecked() != true);
-//        editor.apply();
-//    }
-
-    private void load() {
-        checkSwitch = mPrefs.getBoolean("Check" + SwitchNum, false);
-
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////
-//    class SwitchListener implements CompoundButton.OnCheckedChangeListener{
-//        @Override
-//        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//            // 체크상태값이 변경된 체크박스, 스위치 객체의 주소값이 buttonView 로 들어가고
-//            // 해당 체크박스, 스위치의 체크상태값이 isChecked 로 들어간다.
-//            // 체크상태가 변경된 스위치의 id를 가져온다.
-//            int id = buttonView.getId();
-//            // 아이디 값으로 분기한다.
-//            switch (id){
-//                case R.id.switch1 :
-//                    if(isChecked) {
-//                        //todo 스위치 활성화시 기능 추가할 부분
-//                        //스위치 값 저장
-//                        save1();
-//                        break;
-//                    }
-//                    else {
-//                        break;
-//                        //todo 스위치 비활성화시 기능 추가할 부분
-//                        //스위치 값 저장
-////                        mPrefs = getSharedPreferences("mPrefs", MODE_PRIVATE);
-////                        chk = mPrefs.getBoolean("Check" + Integer.toString(SwitchNum),  false);
-////                        Switch1.setChecked(chk);
-//                    }
-//            }
-//        }
-//    }
-    //추가된 내용들 끝
 
     //Log.d("Problem", "컨텍스트메뉴 문제발생지점"); -> 문제발생시 위치확인용으로 쓸 로그문 추후 삭제
 }
