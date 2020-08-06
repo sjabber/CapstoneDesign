@@ -5,10 +5,6 @@
     android:layout_height="match_parent"
     android:descendantFocusability="blocksDescendants">
 
-    <LinearLayout
-        android:id="@+id/list1"
-        android:layout_width="match_parent"
-        android:layout_height="50dp">
 
     <TextView
         android:id="@+id/textView_list"
@@ -23,15 +19,16 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     <Switch
-        android:focusable="false"
-        android:focusableInTouchMode="false"
         android:id="@+id/switch1"
         android:layout_width="50dp"
         android:layout_height="30dp"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="6dp"
         android:layout_marginRight="20dp"
-        android:layout_marginBottom="10dp" />
+        android:layout_marginBottom="10dp"
+        android:checked="false"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true" />
 
-    </LinearLayout>
 </LinearLayout>

@@ -1,10 +1,11 @@
 package com.example.capstone_design;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,7 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
+//import android.widget.BaseAdapter; -> BaseAdapter 에서 ArrayAdapter 로 변경됨
 import android.widget.Button;
 import android.widget.Checkable;
 import android.widget.CompoundButton;
@@ -33,7 +34,6 @@ import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 
 
@@ -48,68 +48,58 @@ public class MainActivity extends AppCompatActivity {
     String[] result; //ArrayAdapter에 넣을 배열을 생성한다.
     String sql;
     ListUpdate update;
-
-
-
+    CustomAdapter customAdapter;
+    ArrayList<String> items;
+    //SwitchListener check;
+    SharedPreferences mPrefs;
+    Switch Switch1;
 
     public static int PositionNumber;
     public static int SwitchPosition;
     private View Customlistview;
+    private View Customlistview2;
+    private int SwitchNum;
+    boolean checkSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // 스위치 리스너 객체를 생성
+       // check = new SwitchListener();
+
+        //todo 위치1
+        // Shared Preference를 불러온다.
+        mPrefs = getSharedPreferences("mPrefs", MODE_PRIVATE);
+
+        //TODO: 2020-08-05, 2순위 해결과제
+        //커스텀 리스트뷰 객체 호출 -> 메모리적재
+        Customlistview = LayoutInflater.from(this).inflate(R.layout.list1, null);
+        Switch1 = (Switch) Customlistview.findViewById(R.id.switch1);
+
+        //저장된 스위치 값들을 불러온다.
+        checkSwitch = mPrefs.getBoolean("Check" + SwitchNum,false);
+
+
+
         //액티비티 전환
         //뷰(버튼)의 주소값을 얻어온다.
         // 뷰의 주소값을 담을 참조변수
         Button button1 = (Button)findViewById(R.id.button1);
 
-        //Switch Switch_1 = (Switch)findViewById(R.id.switch1);
+        // 스위치 갱신 객체를 생성, 위치변경 X
+        customAdapter = new CustomAdapter(MainActivity.this, R.layout.list1, R.id.textView_list, items);
 
-        //커스텀 리스트뷰 객체 호출 -> 메모리적재
-        Customlistview = LayoutInflater.from(this).inflate(R.layout.list1, null);
-        final Switch SwitchButton = Customlistview.findViewById(R.id.switch1);
-
-        final onClickSwitch SwitchListener1 = new onClickSwitch();
-
-
-        // 작동 제대로 안되는 코드
-        //// TODO: 2020-08-03
-        SwitchButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                int position = (Integer) buttonView.getId();
-
-                SwitchListener1.onClick(SwitchButton);
-                int clickSwitch = (int) R.id.switch1;
-                Toast.makeText(MainActivity.this, "매크로 활성화", Toast.LENGTH_SHORT).show();
-                Log.d("스위치", "on버튼");
-
-                if (SwitchPosition == clickSwitch) {
-                if (isChecked) {
-                    Toast.makeText(MainActivity.this, "매크로 활성화", Toast.LENGTH_SHORT).show();
-                    Log.d("스위치", "on버튼");
-                } else {
-                    Toast.makeText(MainActivity.this, "매크로 비활성화", Toast.LENGTH_SHORT).show();
-                  }
-                }
-            }
-        });
-
-
-        // 리스너 객체를 생성
+        // 추가하기 버튼 리스너 객체를 생성
         BtnListener1 listener1 = new BtnListener1();
 
-
-        // 리스너를 버튼 객체에 설정한다.
+        // 추가하기 버튼의 리스너를 버튼 객체에 설정한다.
         button1.setOnClickListener(listener1);
 
         // 리스트 갱신 객체를 생성
         update = new ListUpdate();
+
 
         // 리스트뷰를 더한다.
         db = openOrCreateDatabase("Macro_DB", MODE_PRIVATE, null);
@@ -117,9 +107,14 @@ public class MainActivity extends AppCompatActivity {
         textview = (TextView)findViewById(R.id.Mac_List_Text);
         EditName = (EditText)findViewById(R.id.EditMacroName);
 
+
         try{
-            //리스트뷰 갱신
+            //리스트뷰 갱신 // TODO: 2020-08-05 //1순위 해결과제
             update.ListUpdate();
+            Switch1.setChecked(checkSwitch);
+//            check.onCheckedChanged(Switch1, chk);
+//            chk = mPrefs.getBoolean("mPref", true);
+//            Switch1.setChecked(chk);
         }
 
         catch (SQLException e) {
@@ -137,6 +132,11 @@ public class MainActivity extends AppCompatActivity {
         try {
             //리스트뷰 갱신
             update.ListUpdate();
+            Switch1.setChecked(checkSwitch);
+
+//            check.onCheckedChanged(Switch1, chk);
+//            chk = mPrefs.getBoolean("mPref", true);
+//            Switch1.setChecked(chk);
         }
 
         catch (SQLException e) {
@@ -146,6 +146,20 @@ public class MainActivity extends AppCompatActivity {
 
         // 뷰에 컨텍스트 메뉴를 설정한다.
         registerForContextMenu(listview); // 리스트뷰를 길게 누르면 컨텍스트 메뉴가 나온다.
+    }
+
+    // TODO: 2020-08-06  
+    public void onStop() {
+        super.onStop();
+        mPrefs = getSharedPreferences("mPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = mPrefs.edit(); //Editor를 불러온다.
+
+        Switch1 = (Switch) Customlistview.findViewById(R.id.switch1);
+
+        //저장할 값들을 입력한다.
+        editor.putBoolean("Check" + SwitchNum, Switch1.isChecked());
+
+        editor.commit(); //저장한다.
     }
 
     @Override
@@ -232,11 +246,12 @@ public class MainActivity extends AppCompatActivity {
         return super.onContextItemSelected(item);
     }
 
+
     @Override
     public void onContextMenuClosed(@NonNull Menu menu) {
         super.onContextMenuClosed(menu);
-        adapter.notifyDataSetChanged();
-        listview.setAdapter(adapter);
+        customAdapter.notifyDataSetChanged();
+        listview.setAdapter(customAdapter);
     }
 
     // 옵션 메뉴
@@ -258,10 +273,6 @@ public class MainActivity extends AppCompatActivity {
                Intent intent1 = new Intent(MainActivity.this, Setting.class);
                startActivity(intent1);
 
-               //추후 추가할 내용(info)
-           //case R.id.item2 :
-               //Intent intent2 = new Intent(MainActivity.this, info.class);
-               //startActivity(inten2);
        }
        return super.onOptionsItemSelected(item);
     }
@@ -276,44 +287,104 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class ListAdapter extends BaseAdapter{
+
+    //ArrayListAdapter 를 상속한 커스텀어댑터 -> 커스텀 리스트뷰에 적용 (customAdapter)
+    private class CustomAdapter extends ArrayAdapter<String> {
+        private ArrayList<String> items;
+
+        public CustomAdapter(Context context, int resource, int textViewResourceId, ArrayList<String> objects) {
+            super(context, resource, textViewResourceId, objects);
+            this.items = objects;
+
+            Customlistview = LayoutInflater.from(MainActivity.this).inflate(R.layout.list1, null);
+            Switch Switch1 = (Switch) Customlistview.findViewById(R.id.switch1);
+
+            Customlistview2 = LayoutInflater.from(MainActivity.this).inflate(R.layout.list1, null);
+            textview = (TextView) Customlistview2.findViewById(R.id.textView_list);
+        }
 
         @Override
+        // 리스트 뷰의 항목 개수를 반환하는 메서드
         public int getCount() {
             return result.length;
         }
 
         @Override
-        public Object getItem(int position) {
+        // 우리가 자유롭게 리턴하고싶은 객체를 반환해주면된다.
+        // position에 항목의 인덱스번호가 들어온다.
+        public String getItem(int position) {
             return null;
         }
 
         @Override
+        // 리턴받은 객체에 대한 뷰의 ID값을 알려주는 메서
         public long getItemId(int position) {
             return 0;
         }
 
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            // 재사용 가능한 뷰가 없다면 뷰를 만들어준다.
-            if(convertView == null) {
-                LayoutInflater inflater = getLayoutInflater();
-                convertView = inflater.inflate(R.layout.list1, null);
+        //리스트뷰 항목 하나를 구성하여 반환한다. (xml파일 뷰객체를 반환해주는 역할)
+        // 화면에 보이는 항목들만 보여주게한다.
+        //재사용 가능한 뷰가 없다면 뷰를 만들어준다.
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            View v = convertView;
+            if (v == null) {
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                v = inflater.inflate(R.layout.list1, null);
             }
 
-            //뷰를 구성한다.
-            TextView sub_text = (TextView)convertView.findViewById(R.id.textView_list);
-            Switch sub_switch = (Switch)convertView.findViewById(R.id.switch1);
+            String str = result[position];
 
-            //스위치에 인덱스 값을 저장한다.
-            sub_switch.setTag(position);
-            sub_text.setText(result[position]);
+            if(str != null) {
+                //뷰를 구성한다.
+                TextView sub_text = (TextView) v.findViewById(R.id.textView_list);
+                //체크박스를 얻어온다.
+                final Switch Switch1 = (Switch) v.findViewById(R.id.switch1);
 
-            //뷰를 반환한다.
-            return convertView;
+                if(sub_text != null) {
+                    //스위치에 인덱스 값을 저장한다.
+                    Switch1.setTag(position);
+                    //리스트의 텍스트에도 포지션값을 저장한다.
+                    sub_text.setText(result[position]);
+                }
+
+
+
+            }
+            // 스위치가 null이 아니라면
+            if (Switch1 != null) {
+
+            }
+
+
+
+            //스위치버튼 클릭리스너를 넣어둔다.
+            Switch1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                //todo 스위치버튼
+                public void onClick(View v) {
+                    SwitchNum = position;
+                    int id = v.getId();
+                    switch (id) {
+                        case R.id.switch1 :
+                            if(Switch1.isChecked() == true) {
+                                Toast.makeText(MainActivity.this, (position + 1)+"번 매크로 활성화", Toast.LENGTH_SHORT).show();
+                                save1();
+                                Log.d("저장", "저장지점");
+
+                                break;
+
+                            } else if(Switch1.isChecked() != true) {
+                                Toast.makeText(MainActivity.this, (position + 1)+"번 매크로 비활성화", Toast.LENGTH_SHORT).show();
+                                load();
+                                Log.d("해제", "해제지점");
+                                break;
+                            }
+                    }
+                }
+            });
+
+            return v;
         }
-
     }
 
     // 커스텀 리스트뷰 갱신 메소드
@@ -329,32 +400,25 @@ public class MainActivity extends AppCompatActivity {
                 cursor.moveToNext(); // 모든 레코드를 읽어온다.
                 String name = cursor.getString(1);
                 result[i] = name;
+
+                //추가된 내용
+                items = new ArrayList<>(); // update 로 인해 items ArrayList 에 값이 대입된다.
+                for(String temp : result) { //result == Array, items == ArrayList
+                    items.add(temp);
+                }
             }
-            // list1 레이아웃에 속한 textView의 id를 listview 객체(Main 레아아웃의 리스트 아이디 Mac_List 를 가진)에
-            // 대입시키고 이에 쿼리결과인 result를 대입한다.
-            adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.list1, R.id.textView_list, result);
-            adapter.notifyDataSetChanged();
-            listview.setAdapter(adapter);
+
+            customAdapter = new CustomAdapter(MainActivity.this, R.layout.list1, R.id.textView_list, items);
+            customAdapter.notifyDataSetChanged();
+            listview.setAdapter(customAdapter);
+            listview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         }
     }
-
-
-
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
     //아래 전부 테스팅용 클래스들 추후 삭제나 수정 등의 조취를 취할 예쩡
-    public class onClickSwitch implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            SwitchPosition = v.getId();
-        }
 
-//        public int onClickSwitch() {
-//            SwitchPosition = 0;
-//            return SwitchPosition;
-//        }
-    }
 
     public class CheckableLinearLayout extends LinearLayout implements Checkable {
         public CheckableLinearLayout(Context context, AttributeSet attrs) {
@@ -385,6 +449,54 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+    //todo 저장, 로드
+    private void save1() {
+        SharedPreferences.Editor editor = mPrefs.edit();
+        editor.putBoolean("Check" + SwitchNum, true);
+        editor.apply();
+        editor.commit();
+    }
+
+//    private void save2() {
+//        SharedPreferences.Editor editor = mPrefs.edit();
+//
+//        editor.putBoolean("Check" + SwitchNum, Switch1.isChecked() != true);
+//        editor.apply();
+//    }
+
+    private void load() {
+        checkSwitch = mPrefs.getBoolean("Check" + SwitchNum, false);
+
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+//    class SwitchListener implements CompoundButton.OnCheckedChangeListener{
+//        @Override
+//        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//            // 체크상태값이 변경된 체크박스, 스위치 객체의 주소값이 buttonView 로 들어가고
+//            // 해당 체크박스, 스위치의 체크상태값이 isChecked 로 들어간다.
+//            // 체크상태가 변경된 스위치의 id를 가져온다.
+//            int id = buttonView.getId();
+//            // 아이디 값으로 분기한다.
+//            switch (id){
+//                case R.id.switch1 :
+//                    if(isChecked) {
+//                        //todo 스위치 활성화시 기능 추가할 부분
+//                        //스위치 값 저장
+//                        save1();
+//                        break;
+//                    }
+//                    else {
+//                        break;
+//                        //todo 스위치 비활성화시 기능 추가할 부분
+//                        //스위치 값 저장
+////                        mPrefs = getSharedPreferences("mPrefs", MODE_PRIVATE);
+////                        chk = mPrefs.getBoolean("Check" + Integer.toString(SwitchNum),  false);
+////                        Switch1.setChecked(chk);
+//                    }
+//            }
+//        }
+//    }
     //추가된 내용들 끝
 
     //Log.d("Problem", "컨텍스트메뉴 문제발생지점"); -> 문제발생시 위치확인용으로 쓸 로그문 추후 삭제
