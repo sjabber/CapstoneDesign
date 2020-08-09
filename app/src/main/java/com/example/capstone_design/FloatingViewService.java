@@ -161,18 +161,18 @@ public class FloatingViewService extends Service implements View.OnClickListener
             //뷰를 종료한다.
 
             case R.id.buttonStop:
-                String sql1 = "INSERT INTO Macro (Mac_name) VALUES (?)";
-                String[] arg = {inputedName};
+                String sql = "INSERT INTO Macro (Mac_name, ACTIVE) VALUES (?, ?)";
+                String[] arg = {inputedName, Integer.toString(0)};
 
                 try{
-                    db.execSQL(sql1, arg);
+                    db.execSQL(sql, arg);
                     Toast toast = Toast.makeText(getApplicationContext(), "저장되었습니다.", Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.LEFT|Gravity.BOTTOM, 330, 180);
                     toast.show();
                 }
                 catch (Exception e) {
                     Log.d("Problem1", "쿼리문제 발생지점");
-                    Toast.makeText(getApplicationContext(), "데이터베이스 오류", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "데이터베이스 오류1", Toast.LENGTH_SHORT).show();
                 }
 
                 // 앱을 재실행시켜 메인화면으로 이동
