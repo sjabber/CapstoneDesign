@@ -15,8 +15,7 @@
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_marginTop="20dp"
-        android:layout_marginLeft="100dp"
-        android:layout_marginRight="100dp"
+        android:layout_gravity="center"
         app:srcCompat="@drawable/key" />
 
     <TextView
@@ -31,24 +30,14 @@
         android:id="@+id/editText_setting_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:layout_marginTop="10dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:ems="10"
-        android:hint="매크로 호출 명령어를 입력해 주세요."
+        android:hint="앱 호출 명령어를 입력해 주세요."
         android:inputType="textPersonName" />
 
-        <TextView
-            android:id="@+id/textView_setting_name2"
-            android:layout_width="338dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:gravity="center"
-            android:text="앱을 음성으로 작동시키고 싶은 이름을 입력해 주십시오."
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
 
     <TextView
         android:id="@+id/textView_setting_name3"
@@ -77,18 +66,22 @@
 
         <TextView
             android:id="@+id/textView_setting_name4"
-            android:layout_width="278dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginLeft="10dp"
-            android:text="앱 호출 명령어로 화면 잠금 해제하기"
+            android:layout_marginLeft="5dp"
+            android:layout_gravity="left"
+            android:gravity="center"
+            android:text="음성으로 앱 호출 허용"
             android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
         <Switch
             android:id="@+id/switch_setting_name1"
-            android:layout_width="7dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_marginTop="3dp"
+            android:layout_marginRight="20dp"
+            android:checked="true" />
     </LinearLayout>
 
 </LinearLayout>

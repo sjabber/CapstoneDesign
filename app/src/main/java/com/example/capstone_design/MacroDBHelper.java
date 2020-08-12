@@ -26,12 +26,12 @@ public class MacroDBHelper extends SQLiteOpenHelper {
 
     private void updateMyDatabase(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < 1) {
-            String sql = "CREATE TABLE Macro("
-                    + "Mac_num INTEGER PRIMARY KEY, "
-                    + "Mac_name TEXT UNIQUE, "
-                    + "CONSTRAINT CK_NAME CHECK (Mac_name != NULL))";
-            // + "Mac_act BOOL not null)";
-            db.execSQL(sql);
+                String sql = "CREATE TABLE Macro("
+                        + "Mac_num INTEGER PRIMARY KEY, "
+                        + "Mac_name TEXT UNIQUE, "
+                        + "CONSTRAINT CK_NAME CHECK (Mac_name != NULL))";
+                // + "Mac_act BOOL not null)";
+                db.execSQL(sql);
         }
         //Switch, case 문 대신 if 문으로 업데이트 사항 추가.
         if (oldVersion < 2) {

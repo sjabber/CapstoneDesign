@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Capstone_Design</string>
+    <string name="app_name">헤이요</string>
     <string name="textView2">내 매크로 이름 입력</string>
     <string name="EditMacroName">매크로 호출 명령어 이름을 입력해 주세요.</string>
     <string name="textView5">한글 2자 이상 5자 이내 / 영문, 숫자, 특수기호 불가</string>
