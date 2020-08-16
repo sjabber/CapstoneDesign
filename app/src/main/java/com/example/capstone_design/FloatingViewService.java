@@ -2,9 +2,7 @@ package com.example.capstone_design;
 
 import android.app.Service;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
@@ -16,7 +14,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 import static com.example.capstone_design.AddActivity.inputedName; //AddActivity 에서 입력받은 값을 저장해놓은 변수
-import androidx.core.content.IntentCompat;
 
 
 public class FloatingViewService extends Service implements View.OnClickListener {
@@ -31,7 +28,6 @@ public class FloatingViewService extends Service implements View.OnClickListener
     SQLiteDatabase db = null;
     private final String pakageName = "com.example.capstone_design";
 
-
     public FloatingViewService() {
     }
 
@@ -39,6 +35,7 @@ public class FloatingViewService extends Service implements View.OnClickListener
     public IBinder onBind(Intent intent) {
         return null;
     }
+
 
     @Override
     public void onCreate() {
@@ -90,6 +87,7 @@ public class FloatingViewService extends Service implements View.OnClickListener
         //this : 이 클래스 자체, FloatingViewService 를 지칭한다.
         expandedView.setOnClickListener(this); // 누르면 꺼지게 설계되어있음.
 
+
         //플로팅 위젯의 드래그 이동을 위한 터치리스너
         mFloatingView.findViewById(R.id.relativeLayoutParent).setOnTouchListener(new View.OnTouchListener() {
             private int initialX;
@@ -132,6 +130,7 @@ public class FloatingViewService extends Service implements View.OnClickListener
                 return true;
             }
         });
+
     }
 //    class ClickWindow implements View.OnClickListener{
 //
@@ -175,6 +174,7 @@ public class FloatingViewService extends Service implements View.OnClickListener
                     Toast.makeText(getApplicationContext(), "데이터베이스 오류1", Toast.LENGTH_SHORT).show();
                 }
 
+
                 // 앱을 재실행시켜 메인화면으로 이동
                 intent = new Intent(this, MainActivity.class);
                 ComponentName cn = intent.getComponent();
@@ -185,9 +185,14 @@ public class FloatingViewService extends Service implements View.OnClickListener
                 break;
 
             case R.id.buttonStart:
+
                 //핵심 기능이 완성되면 여기서 구동되도록 실현시킨다.
-                Toast toast3 = Toast.makeText(FloatingViewService.this, "매크로 녹화기능 미구현", Toast.LENGTH_SHORT);
-                toast3.show();
+//                Toast toast3 = Toast.makeText(FloatingViewService.this, "매크로 녹화기능 미구현", Toast.LENGTH_SHORT);
+//                toast3.show();
+
+                Intent intent = new Intent(FloatingViewService.this, TouchInput2.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
                 break;
         }
     }
