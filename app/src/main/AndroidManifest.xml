@@ -23,9 +23,6 @@
         <activity android:name=".Setting"></activity>
         <activity android:name=".Setting_name"></activity>
         <activity android:name=".EditActivity"></activity>
-        <activity android:name=".TouchInput" android:theme="@style/Theme.Transparent"></activity>
-        <activity android:name=".TouchInput2" android:theme="@style/Theme.Transparent"></activity>
-        <activity android:name=".TouchOutput"></activity>
 
 
         <service
