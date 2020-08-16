@@ -194,6 +194,7 @@ public class FloatingViewService extends Service implements View.OnClickListener
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 break;
+                //todo : branc2 분기점
         }
     }
 
