@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     SQLiteDatabase db; // DB를 다루기 위한 SQLiteDabase 객체 생성
     SQLiteOpenHelper MacroDatabaseHelper;
+    MacroDBHelper helper;
     Cursor cursor; // Select문 출력을 위해 사용하는 Cursor 형태객체 생성
     ListView listview; // Listview 객체 생성
     TextView textview;
@@ -56,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     public static int Position_N;
     public static int PositionNumber;
     private View Customlistview;
-    private View Customlistview2;
+    //private View Customlistview2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +82,9 @@ public class MainActivity extends AppCompatActivity {
         // 리스트뷰를 더한다.
         MacroDatabaseHelper = new MacroDBHelper(this);
         db = openOrCreateDatabase("Macro_DB", MODE_PRIVATE, null);
+        helper = new MacroDBHelper(this);
+        db = helper.getWritableDatabase();
+
         listview = (ListView)findViewById(R.id.Mac_List);
         textview = (TextView)findViewById(R.id.Mac_List_Text);
         EditName = (EditText)findViewById(R.id.EditMacroName);
@@ -248,6 +252,7 @@ public class MainActivity extends AppCompatActivity {
             //버튼을 누르면 발생하는 일을 적는다.
             Intent intent = new Intent(MainActivity.this, AddActivity.class);
             startActivity(intent);
+            finish(); //액티비티 종료
         }
     }
 
