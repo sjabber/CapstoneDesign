@@ -1,9 +1,11 @@
 package com.example.capstone_design;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -34,6 +36,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import android.content.ContentValues;
 
+import com.example.TouchService.Touch;
+import com.example.permission.FloatWinPermissionCompat;
+import com.example.utils.AccessibilityUtil;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -53,6 +58,11 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<String> items;
     ArrayList<Integer> item_Position;
     Switch Switch1;
+    TextView button1;
+
+    private final String STRING_ACCESS = "시작하기";
+    private final String STRING_START = "추가하기";
+
 
     public static int Position_N;
     public static int PositionNumber;
@@ -76,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         //액티비티 전환
         //뷰(버튼)의 주소값을 얻어온다.
         // 뷰의 주소값을 담을 참조변수
-        Button button1 = (Button)findViewById(R.id.button1);
+        button1 = (TextView) findViewById(R.id.button1);
 
         //DB 객체를 생성한다.
         // 리스트뷰를 더한다.
@@ -115,6 +125,12 @@ public class MainActivity extends AppCompatActivity {
         // 뷰에 컨텍스트 메뉴를 설정한다.
         registerForContextMenu(listview); // 리스트뷰를 길게 누르면 컨텍스트 메뉴가 나온다.
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkState();
     }
 
     public void onRestart() {
@@ -250,10 +266,47 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             //버튼을 누르면 발생하는 일을 적는다.
-            Intent intent = new Intent(MainActivity.this, AddActivity.class);
-            startActivity(intent);
-            finish(); //액티비티 종료
+            switch (button1.getText().toString()) {
+                case STRING_START :
+                    Intent intent = new Intent(MainActivity.this, AddActivity.class);
+                    startActivity(intent);
+                    break;
+
+                case STRING_ACCESS :
+                    requestAcccessibility();
+                    break;
+            }
         }
+    }
+
+    private void checkState() {
+        boolean hasAccessibility = AccessibilityUtil.isSettingOpen(Touch.class, MainActivity.this);
+        boolean hasWinPermission = FloatWinPermissionCompat.getInstance().check(this);
+        if (hasAccessibility) {
+            if (hasWinPermission) {
+                button1.setText(STRING_START);
+            }
+        } else {
+            button1.setText(STRING_ACCESS);
+        }
+    }
+
+    private void requestAcccessibility() {
+        new AlertDialog.Builder(this).setTitle("서비스 접근권한 허용")
+                .setMessage("\n" +
+                        "권한을 허용해 주시 않을 경우 " + getString(R.string.app_name) + " 를 사용하실 수 없습니다.")
+                .setPositiveButton("열기", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // 인증 인터페이스 표시
+                        try {
+                            AccessibilityUtil.jumpToSetting(MainActivity.this);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                })
+                .setNegativeButton("취소", null).show();
     }
 
     //ArrayListAdapter 를 상속한 커스텀어댑터 -> 커스텀 리스트뷰에 적용 (customAdapter)

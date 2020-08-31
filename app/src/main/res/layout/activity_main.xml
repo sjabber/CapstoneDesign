@@ -45,16 +45,18 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textSize="19dp" />
 
-        <Button
+        <TextView
             android:id="@+id/button1"
-            style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
-            android:backgroundTint="#2F97EA"
+            android:background="#2F97EA"
+            android:gravity="center"
+            android:textSize="20sp"
             android:text="추가하기"
-            android:textSize="20sp" />
+            android:textColor="#fff" />
+
     </LinearLayout>
 
     <LinearLayout

@@ -1,10 +1,13 @@
 package com.example.capstone_design;
 
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
@@ -12,21 +15,34 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 import android.widget.Toast;
+
+//import androidx.annotation.RequiresApi;
+
+import com.example.dialog.AddPointDialog;
+import com.example.utils.DialogUtils;
+
 import static com.example.capstone_design.AddActivity.inputedName; //AddActivity 에서 입력받은 값을 저장해놓은 변수
+
 
 
 public class FloatingViewService extends Service implements View.OnClickListener {
 
+    private AddPointDialog addPointDialog;
     private WindowManager mWindowManager;
     private View mFloatingView;
     private View collapsedView;
     private View expandedView;
+    private int LAYOUT_FLAG;
     private Intent intent;
     private Intent intent2;
     MacroDBHelper helper;
     SQLiteDatabase db = null;
     private final String pakageName = "com.example.capstone_design";
+
+
 
     public FloatingViewService() {
     }
@@ -47,11 +63,16 @@ public class FloatingViewService extends Service implements View.OnClickListener
         //레이아웃 인플레이터로 xml에서 위젯 레이아웃을 가져온다.
         mFloatingView = LayoutInflater.from(this).inflate(R.layout.activity_floating_widget, null);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            LAYOUT_FLAG = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        } else {
+            LAYOUT_FLAG = WindowManager.LayoutParams.TYPE_PHONE;
+        }
         //레이아웃 파라미터 설정
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                LAYOUT_FLAG,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT);
 
@@ -137,6 +158,7 @@ public class FloatingViewService extends Service implements View.OnClickListener
 //    }
 
 
+    //@RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -168,7 +190,16 @@ public class FloatingViewService extends Service implements View.OnClickListener
                     Toast toast = Toast.makeText(getApplicationContext(), "저장되었습니다.", Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.LEFT|Gravity.BOTTOM, 330, 180);
                     toast.show();
+
+                    //////////////////////추가내역///////////////////////////////////////////////////////////
+                    //작업이 완료되면 노티피케이션 메시지도 사라지게 한다.
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                        stopForeground(STOP_FOREGROUND_REMOVE); //위의 id 10을 가져온다.
+                        NotificationManager manager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+                        manager.cancel(10);
+                    }
                 }
+                //////////////////////////////////////////////////////////////////////////////
                 catch (Exception e) {
                     Log.d("Problem1", "쿼리문제 발생지점");
                     Toast.makeText(getApplicationContext(), "데이터베이스 오류1", Toast.LENGTH_SHORT).show();
@@ -187,14 +218,18 @@ public class FloatingViewService extends Service implements View.OnClickListener
             case R.id.buttonStart:
 
                 //핵심 기능이 완성되면 여기서 구동되도록 실현시킨다.
-//                Toast toast3 = Toast.makeText(FloatingViewService.this, "매크로 녹화기능 미구현", Toast.LENGTH_SHORT);
-//                toast3.show();
-
                 Intent intent = new Intent(FloatingViewService.this, TouchInput2.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+
+//                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                    startForegroundService(intent);
+//                } else {
+//                    startService(intent);
+//                }
+
                 break;
-                //todo : branc2 분기점
+                //todo : branch2 분기점
         }
     }
 

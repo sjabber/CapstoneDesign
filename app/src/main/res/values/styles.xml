@@ -19,4 +19,13 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <style name="NoTitleDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item><!--틀-->
+        <item name="android:windowIsFloating">true</item><!--Activity 위에 뜨는 모양-->
+        <item name="android:windowIsTranslucent">false</item><!--투명-->
+        <item name="android:windowNoTitle">true</item><!--NoTitle-->
+        <item name="android:windowBackground">@android:color/transparent</item><!--투명배경-->
+        <item name="android:backgroundDimEnabled">true</item><!--흐리게-->
+    </style>
+
 </resources>

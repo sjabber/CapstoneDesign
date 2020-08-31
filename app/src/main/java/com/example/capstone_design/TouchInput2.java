@@ -1,116 +1,130 @@
 package com.example.capstone_design;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-//import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+
+import com.example.Touch.TouchEvent;
+import com.example.Touch.TouchPoint;
+import com.example.TouchService.Touch;
+import com.example.adapter.TouchPointAdapter;
 
 
-public class TouchInput2 extends Activity {
+
+
+@SuppressLint("ClickableViewAccessibility")
+public class TouchInput2 extends Activity implements View.OnClickListener {
 
     //TextView textView;
     MacroDBHelper helper;
     SQLiteDatabase db = null;
-    public static float x_data;
-    public static float y_data;
-    public static long interval;
+    public static TouchPoint touchPoint;
+    View view;
+    public static int x_data;
+    public static int y_data;
     public static long downTime;
     public static long eventTime;
     public static int action;
     public static int num;
     public static MotionEvent event;
 
+    private TouchPointAdapter touchPointAdapter;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //ToastUtil.show("터치입력 시작");
+        TouchEvent.postPauseAction();
+
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.empty);
-
-        //textView = findViewById(R.id.textView3);
+        setContentView(R.layout.empty2);
 
         helper = new MacroDBHelper(this);
         db = helper.getWritableDatabase();
+        num = 0;
 
-        final View view = findViewById(R.id.testing);
-
-
+        view = findViewById(R.id.transparent_view);
         view.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-                x_data = event.getX(); // x좌표
-                y_data = event.getY(); // y좌표
-                num += 1;
+                x_data = (int) event.getRawX(); // x좌표
+                y_data = (int) event.getRawY(); // y좌표
+                int transparent = v.getId();
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN: {
-                        printS("손가락 눌림 : "+x_data+", "+y_data);
+
+                        num++;
 
                         String sql = "INSERT INTO Act (Act_x, Act_y) VALUES (?, ?)";
                         String[] arg = {Float.toString(x_data), Float.toString(y_data)};
 
                         try {
                             db.execSQL(sql, arg);
-                            final Toast toast = Toast.makeText(getApplicationContext(), num + "번", Toast.LENGTH_SHORT);
-                            toast.show();
-                            new CountDownTimer(1000, 1000) {
-                                public void onTick(long millisUntillFinished) {toast.show();}
-                                public void onFinish() {toast.show();}
+                            final Toast toast1 = Toast.makeText(getApplicationContext(), num + "번", Toast.LENGTH_SHORT);
+                            toast1.show();
+                            new CountDownTimer(500, 500) {
+                                public void onTick(long millisUntillFinished) {
+                                    toast1.show();
+                                }
+
+                                public void onFinish() {
+                                    toast1.show();
+                                }
                             }.start(); // 토스트 1초만 뜨도록 설정
 
-                            downTime = SystemClock.uptimeMillis();
-                            eventTime = SystemClock.uptimeMillis();
-                            action = MotionEvent.ACTION_DOWN;
-                            interval = downTime - eventTime; //시간 간격정보를 저장한다.
 
                             System.out.println(x_data);
                             System.out.println(y_data);
+                            touchPoint = new TouchPoint(x_data, y_data, 0);
 
-                            event = MotionEvent.obtain(downTime, eventTime, action, x_data, y_data, 0);
-                            Log.d("터치1", "터치1");
+
+                            Log.d("터치" + num, "터치" + num);
                             System.out.println(event);
                             //onTouchEvent(event);
 
-
-//                            Intent intent = new Intent(TouchInput2.this, TouchOutput.class);
-//                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                            startActivity(intent);
-
-                            //finish();
-
-
-
-
-
+//                            /////////////////////////////
+//                            if (transparent == R.id.testing2) {
+//                                Intent intent = new Intent(TouchInput2.this, Touch.class);
+//                                startService(intent);
+//                                System.out.println(intent);
+//                                System.out.println(transparent);
+//                                System.out.println(R.id.testing2);
+//                            }
 
                         } catch (Exception e) {
-                            final Toast toast = Toast.makeText(getApplicationContext(), "입력 불가 오류발생", Toast.LENGTH_SHORT);
-                            toast.show();
+                            final Toast toast1 = Toast.makeText(getApplicationContext(), "입력 불가 오류발생", Toast.LENGTH_SHORT);
+                            toast1.show();
                         }
-
-
-
-
-                        return true;
+                        return false;
 
 
                     }
 
-                    case MotionEvent.ACTION_MOVE: {
-                        printS("손가락 움직임 : "+x_data+", "+y_data);
-                        return true;
-                    }
 
+//                    case MotionEvent.ACTION_MOVE: {
+//                        printS("손가락 움직임 : "+x_data+", "+y_data);
+//                        return true;
+//                    }
+//
                     case MotionEvent.ACTION_UP: {
-                        printS("손가락 뗌 : "+x_data+", "+y_data);
+//                        SystemClock.sleep(2000);
                         return false;
                     }
 
@@ -118,51 +132,38 @@ public class TouchInput2 extends Activity {
                 }
             }
         });
+
     }
 
-    public void printS(String s) {
-        Toast toast = Toast.makeText(this, s + "\n", Toast.LENGTH_SHORT);
-        toast.show();
-//        textView.append(s+"\n");
-    }
 
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//        float x_data = event.getX(); // x좌표
-//        float y_data = event.getY(); // y좌표
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.transparent_view :
+                TouchEvent.postStartAction(touchPoint);
+                Log.d("터치 서비스 시작", "터치 서비스 시작");
+                startService(new Intent(TouchInput2.this, Touch.class));
+                finish();
+                break;
+        }
+
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+//            TouchEvent.postStartAction(touchPoint);
+//            startService(new Intent(TouchInput2.this, Touch2.class));
+//            finish();
 //
-//        switch (event.getAction()) {
-//            case MotionEvent.ACTION_DOWN: {
+//        } else if (Settings.canDrawOverlays(this)) {
+//            TouchEvent.postStartAction(touchPoint); //값이 들어가는 부분.
+//            startService(new Intent(TouchInput2.this, Touch2.class));
+//            finish();
 //
-//                printS("손가락 눌림 : "+x_data+", "+y_data);
-//
-//                downTime = SystemClock.uptimeMillis();
-//                eventTime = SystemClock.uptimeMillis();
-//                action = MotionEvent.ACTION_DOWN;
-//
-//                interval = downTime - eventTime; //시간 간격정보를 저장한다.
-//
-//                event = MotionEvent.obtain(downTime, eventTime, action, x_data, y_data, 0);
-//                onTouchEvent(event);
-//
-//                System.out.println(x_data);
-//                System.out.println(y_data);
-//                return true;
-//            }
-//
-//            case MotionEvent.ACTION_MOVE: {
-//                printS("손가락 움직임 : "+x_data+", "+y_data);
-//                return true;
-//            }
-//
-//            case MotionEvent.ACTION_UP: {
-//                printS("손가락 뗌 : "+x_data+", "+y_data);
-//                return false;
-//            }
-//
-//            default:
-//                return false;
+//        } else {
+//            Toast.makeText(this, "진입 불가", Toast.LENGTH_SHORT).show();
 //        }
+    }
+
 
 }
 
