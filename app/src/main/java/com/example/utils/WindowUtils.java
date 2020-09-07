@@ -47,7 +47,7 @@ public class WindowUtils {
     }
 
     /**
-     * 修复8.0以上透明背景Activity指定方向时候闪退的bug
+     * 8.0 이상의 투명한 배경을 가진 활동이 방향을 지정할 때 충돌하는 버그 수정
      * @param activity
      */
     public static void fixOrientation(Activity activity){
@@ -63,7 +63,7 @@ public class WindowUtils {
     }
 
     /**
-     * 获取屏幕宽度
+     * 화면 너비 가져 오기
      */
     public static int getScreenWidth(Context context){
         return context.getResources().getDisplayMetrics().widthPixels;

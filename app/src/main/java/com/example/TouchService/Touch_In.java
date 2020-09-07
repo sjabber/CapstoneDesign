@@ -140,7 +140,7 @@ public class Touch_In extends AccessibilityService {
                     touchPoint2 = new TouchPoint(x, y, t1);
                     TouchPoint touch2 = touchPoint2;
                     autoTouchPoint = touch2;
-                    SystemClock.sleep(t1);
+                    SystemClock.sleep(t1 - 1000);
 
                     autoTouch2.run();
                 }
