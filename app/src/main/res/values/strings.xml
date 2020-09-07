@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">Capstone_Design</string>
+    <string name="app_name">헤이요</string>
+    <string name="textView2">내 매크로 이름 입력</string>
+    <string name="EditMacroName">매크로 호출 명령어 이름을 입력해 주세요.</string>
+    <string name="textView5">한글 2자 이상 5자 이내 / 영문, 숫자, 특수기호 불가</string>
+    <string name="saveButton">저장</string>
+
+    <string name="permission">터치 어시스턴트</string>
+    <string name="hint">자동 터치 기능을 정상적으로 사용하려면 권한을 활성화하십시오.</string>
 </resources>

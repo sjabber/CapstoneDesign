@@ -17,7 +17,7 @@
             android:layout_marginLeft="30dp"
             android:layout_marginTop="30dp"
             android:layout_marginRight="30dp"
-            android:text="내 매크로 이름 입력"
+            android:text="@string/textView2"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textSize="30sp"
@@ -31,7 +31,7 @@
             android:layout_marginTop="50dp"
             android:layout_marginRight="20dp"
             android:ems="10"
-            android:hint="매크로 호출 명령어를 입력해 주세요."
+            android:hint="@string/EditMacroName"
             android:inputType="textPersonName" />
 
     </LinearLayout>
@@ -46,7 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:text="한글 2자 이상 5자 이내 / 영문, 숫자, 특수기호 불가" />
+            android:text="@string/textView5" />
 
         <Button
             android:id="@+id/saveButton"
@@ -55,7 +55,7 @@
             android:layout_marginLeft="25dp"
             android:layout_marginTop="50dp"
             android:layout_marginRight="25dp"
-            android:text="저장" />
+            android:text="@string/saveButton" />
     </LinearLayout>
 
 </LinearLayout>

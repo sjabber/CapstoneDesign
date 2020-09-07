@@ -7,5 +7,11 @@
         android:title="setting" />
     <item
         android:id="@+id/item2"
-        android:title="info" />
+        android:title="튜토리얼" />
+    <item
+        android:id="@+id/item3"
+        android:enabled="true"
+        android:icon="@drawable/mic"
+        android:title="Item3"
+        app:showAsAction="always" />
 </menu>
