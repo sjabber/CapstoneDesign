@@ -42,11 +42,11 @@ public class TouchInput extends Activity implements View.OnClickListener {
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.empty2);
+        setContentView(R.layout.empty);
 
-        TouchInput = TouchInput.this;
+        TouchInput = TouchInput.this; // 변수가 TouchInput 자기 자신임을 확인 → Floating 에서 사용
 
         helper = new MacroDBHelper(this);
         db = helper.getWritableDatabase();

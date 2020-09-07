@@ -4,20 +4,27 @@ import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.GestureDescription;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Path;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.speech.tts.Voice;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.RequiresApi;
 import com.example.Touch.TouchEvent;
 import com.example.Touch.TouchPoint;
+import com.example.capstone_design.MacroDBHelper;
+import com.example.capstone_design.MainActivity;
 import com.example.capstone_design.R;
 import com.example.capstone_design.TouchEventManager;
 import com.example.capstone_design.TouchInput;
@@ -31,6 +38,9 @@ import org.jetbrains.annotations.NotNull;
 import java.text.DecimalFormat;
 
 import static com.example.capstone_design.TouchInput.touchPoint;
+//import static com.example.capstone_design.MainActivity.touchPoint2;
+import static com.example.capstone_design.MainActivity.Voices;
+
 
 
 // 직접적으로 화면에 터치를 가하는 서비스 클래스
@@ -39,12 +49,23 @@ import static com.example.capstone_design.TouchInput.touchPoint;
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class Touch_In extends AccessibilityService {
 
+    SQLiteDatabase db;
+    SQLiteDatabase MacroDatabaseHelper;
+    MacroDBHelper helper;
+    int Macro_Number;
+    String Macro_Name;
+    comparison comparison;
+    Cursor cursor;
+    TouchPoint touchPoint2;
+    long t1;
+
+
     private WindowManager mWindowManager;
     private TouchPoint autoTouchPoint; // 자동클릭 이벤트
     @SuppressLint("HandlerLeak")
     private TextView mFloatingView;
     // 카운트 다운
-    private float countDownTime;
+    private long countDownTime;
 //    private int LAYOUT_FLAG;
     private Runnable touchViewRunnable;
     private DecimalFormat floatDf = new DecimalFormat("#0.0");
@@ -58,6 +79,7 @@ public class Touch_In extends AccessibilityService {
         EventBus.getDefault().register(this);
         Log.d("서비스로 전환", "서비스로 전환");
         mWindowManager = WindowUtils.getWindowManager(this);
+
     }
 
 
@@ -80,18 +102,56 @@ public class Touch_In extends AccessibilityService {
                 //removeTouchView();
                 break;
 
-            case TouchEvent.ACTION_RESTART:
-                Log.d("음성 매크로 시작", "음성매크로 시작");
-                TouchPoint touch2 = touchPoint;
-                autoTouchPoint = touch2;
-                onAutoClick2();
-
             case TouchEvent.ACTION_STOP:
                 handler.removeCallbacks(autoTouch);
                 handler.removeCallbacks(touchViewRunnable);
                 //removeTouchView();
                 autoTouchPoint = null;
                 break;
+
+            case TouchEvent.ACTION_TEST:
+                Log.d("음성 매크로 시작", "음성매크로 시작");
+                comparison = new comparison();
+                int Macro_Number; // 매크로 숫자
+                int length; // 해당 매크로의 동작 개수
+
+                float x; // 대입할 X 좌표를 일시적으로 담을 변수
+                float y; // 대입할 Y 좌표를 일시적으로 담을 변수
+                 // 선행 동작 시간값을 일시적으로 담을 변수
+                //long t2; // 후행 동작 시간값을 일시적으로 담을 변수
+
+                //음성명령어와 일치하는 매크로의 번호값을 반환받는다.
+                Macro_Number = comparison.comparison(Voices);
+
+                // 매크로 번호와 일치하는 동작들을 조회한다.
+                String SQL = "SELECT Act_x, Act_y, Act_time FROM Act WHERE Act_Mac = " + Macro_Number;
+
+                cursor = db.rawQuery(SQL, null);
+                length = cursor.getCount();
+
+                for (int i = 0; i < length; i++) {
+                    touchViewRunnable = null;
+                    //맨 처음 대입은 delay 0초로 시작한다.
+                    cursor.moveToNext();  // 맨 처음 값을 넣는다.
+                    x = cursor.getFloat(0);
+                    y = cursor.getFloat(1);
+                    t1 = cursor.getLong(2);
+
+                    touchPoint2 = new TouchPoint(x, y, t1);
+                    TouchPoint touch2 = touchPoint2;
+                    autoTouchPoint = touch2;
+                    SystemClock.sleep(t1);
+
+                    autoTouch2.run();
+                }
+                //onAutoClick2();
+                //SystemClock.sleep(t1);
+                //removeTouchView();
+                break;
+
+//                TouchPoint touch2 = touchPoint2;
+//                autoTouchPoint = touch2;
+//                onAutoClick2();
         }
     }
 
@@ -106,7 +166,7 @@ public class Touch_In extends AccessibilityService {
     private void onAutoClick2() {
         if (autoTouchPoint != null) {
             handler.postDelayed(autoTouch2, 1 * 500L);
-            showTouchView();
+            //showTouchView();
             Log.d("onAutoClick2", "화면에 스스로 터치를 가한다.");
         }
     }
@@ -171,7 +231,14 @@ public class Touch_In extends AccessibilityService {
                 }
             }, null);
         }
+
     };
+
+    private long getDelayTime() {
+//        int random = (int) (Math.random() * (30 - 1) + 1);
+//        return autoTouchEvent.getDelay() * 1000L + random;
+        return autoTouchPoint.getDelay() * 1000L;
+    }
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
@@ -207,7 +274,7 @@ public class Touch_In extends AccessibilityService {
                 mWindowManager.addView(mFloatingView, params);
             }
 
-            countDownTime = autoTouchPoint.getDelay();
+            countDownTime = autoTouchPoint.getDelay() / 1000;
             if (touchViewRunnable == null) {
                 touchViewRunnable = new Runnable() {
                     @Override
@@ -225,6 +292,35 @@ public class Touch_In extends AccessibilityService {
                 };
             }
             handler.post(touchViewRunnable);
+            //touchViewRunnable = null;
+        }
+    }
+
+    private class comparison {
+        private int comparison(String voice) {
+
+            db =  openOrCreateDatabase("Macro_DB", MODE_PRIVATE, null);
+            helper = new MacroDBHelper(getApplicationContext());
+            db = helper.getWritableDatabase();
+
+
+            try{
+                String sql = "SELECT Mac_num, Mac_name FROM Macro WHERE Mac_name = ?";
+                String[] V = new String[1];
+                V[0] = voice;
+
+                cursor = db.rawQuery(sql, V);
+                cursor.moveToNext();
+
+                Macro_Number = cursor.getInt(0);
+                Macro_Name = cursor.getString(1);
+
+            } catch (Exception e) {
+                Toast toast = Toast.makeText(Touch_In.this, "오류발생", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+
+            return Macro_Number;
         }
     }
 

@@ -36,15 +36,13 @@ public class FloatingViewService extends Service implements View.OnClickListener
     private View collapsedView;
     private View expandedView;
     private int LAYOUT_FLAG;
-    private Intent intent;
     private Intent intent2;
     MacroDBHelper helper;
     MacroDBHelper helper2;
 
+
     SQLiteDatabase db = null;
     SQLiteDatabase DB = null;
-
-    TouchInput touchInput = (TouchInput) TouchInput.TouchInput; // 저장버튼을 누르면 TouchInput 을 완전히 종료하기 위함
 
 
     public FloatingViewService() {
@@ -188,6 +186,18 @@ public class FloatingViewService extends Service implements View.OnClickListener
                 break;
             //뷰를 종료한다.
 
+            case R.id.buttonStart:
+
+                 x_data_list.clear();
+                 y_data_list.clear();
+                 now_time_list.clear();
+
+                 //핵심 기능이 완성되면 여기서 구동되도록 실현시킨다.
+                 Intent intent = new Intent(FloatingViewService.this, TouchInput.class);
+                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                 startActivity(intent);
+                 break;
+
             case R.id.buttonStop:
                 String sql = "INSERT INTO Macro (Mac_name, ACTIVE) VALUES (?, ?)";
                 String[] arg = {inputedName, Integer.toString(0)};
@@ -203,7 +213,14 @@ public class FloatingViewService extends Service implements View.OnClickListener
                     toast.setGravity(Gravity.LEFT|Gravity.BOTTOM, 330, 180);
                     toast.show();
 
-                    touchInput.finish(); //TouchInput Activity 종료
+                    x_data_list.clear();
+                    y_data_list.clear();
+                    now_time_list.clear();
+
+                    TouchInput TI = (TouchInput) TouchInput.TouchInput; // 저장버튼을 누르면 TouchInput 을 완전히 종료하기 위함
+                    if(TI != null) {
+                        TI.finish(); //TouchInput Activity 종료
+                    }
                     Log.d("저장버튼", "매크로 정보 저장완료");
                 }
                 catch (Exception e) {
@@ -222,14 +239,7 @@ public class FloatingViewService extends Service implements View.OnClickListener
                 stopSelf(); //위 작업을 마치고 뷰를 종료함.
                 break;
 
-            case R.id.buttonStart:
-                //핵심 기능이 완성되면 여기서 구동되도록 실현시킨다.
-                Intent intent = new Intent(FloatingViewService.this, TouchInput.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
 
-                break;
-                //todo : branch2 분기점
         }
     }
 

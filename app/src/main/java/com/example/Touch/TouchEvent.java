@@ -11,6 +11,7 @@ public class TouchEvent {
     public static final int ACTION_PAUSE = 2;
     public static final int ACTION_RESTART = 3;
     public static final int ACTION_STOP = 4;
+    public static final int ACTION_TEST = 5;
 
     public int action;
     public TouchPoint touchPoint;
@@ -36,6 +37,10 @@ public class TouchEvent {
 
     public static void postRestartAction(TouchPoint touchPoint) {
         postAction(new TouchEvent(ACTION_RESTART, touchPoint));
+    }
+
+    public static void postTestAction() {
+        postAction(new TouchEvent(ACTION_TEST));
     }
 
     public static void postStopAction() {

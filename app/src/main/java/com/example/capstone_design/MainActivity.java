@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
     SQLiteOpenHelper MacroDatabaseHelper;
     MacroDBHelper helper;
-    TouchPoint touchPoint;
+    public static TouchPoint touchPoint2;
     comparison comparison;
 
     ListView listview; // Listview 객체 생성
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
             askPermission();
         }
 
-        //변수가 Main 자기 자신임을 확인 → Add에서 사용
+        //변수가 Main 자기 자신임을 확인 → Add 에서 사용
         MainActivity = MainActivity.this;
 
 
@@ -851,7 +851,7 @@ private RecognitionListener listener = new RecognitionListener() {
 
             if(Mac_name_list.contains(Voices)) {
 
-                if(VoiceMsg.equals("홈")) {
+                if(Voices == "홈") {
                     Intent intent = new Intent(Intent.ACTION_MAIN); //태스크의 첫 액티비티로 시작
                     intent.addCategory(Intent.CATEGORY_HOME);   //홈화면 표시
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); //새로운 태스크를 생성하여 그 태스크안에서 액티비티 추가
@@ -859,43 +859,12 @@ private RecognitionListener listener = new RecognitionListener() {
 
                     SystemClock.sleep(250);
                     startActivity(intent);
-                } else if(VoiceMsg.equals("헤이요")) {
+                } else if(Voices == "헤이요") {
                     Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.example.capstone_design");
                     startActivity(launchIntent);
-                } else if(VoiceMsg.equals("종료")) {
+                } else if(Voices == "종료") {
                     android.os.Process.killProcess(android.os.Process.myPid());
                 } else {
-                    TouchEvent.postRestartAction(touchPoint);
-
-
-                    //음성 명령어와 Macro 테이블 상의 이름을 비교하고 일치하면
-                    // TouchOutput 의 메서드를 가져온다.
-                    comparison = new comparison();
-                    int Macro_Number; // 매크로 숫자
-                    int length; // 해당 매크로의 동작 개수
-
-                    float x; // 대입할 X 좌표를 일시적으로 담을 변수
-                    float y; // 대입할 Y 좌표를 일시적으로 담을 변수
-                    long t1; // 선행 동작 시간값을 일시적으로 담을 변수
-                    long t2; // 후행 동작 시간값을 일시적으로 담을 변수
-
-                    //음성명령어와 일치하는 매크로의 번호값을 반환받는다.
-                    Macro_Number = comparison.comparison(Voices);
-
-                    // 매크로 번호와 일치하는 동작들을 조회한다.
-                    String SQL = "SELECT Act_x, Act_y, Act_time FROM Act WHERE Act_Mac = " + Macro_Number;
-
-                    // 해당 동작들을 cursor1 변수에 담는다.
-                    cursor1 = db.rawQuery(SQL, null);
-                    length = cursor1.getCount();
-
-
-                    //맨 처음 대입은 delay 0초로 시작한다.
-                    cursor1.moveToFirst();  // 맨 처음 값을 넣는다.
-                    x = cursor1.getFloat(0);
-                    y = cursor1.getFloat(1);
-                    t1 = cursor1.getLong(2);
-
                     //홈화면으로 이동시킴
                     Intent home = new Intent(Intent.ACTION_MAIN);
                     home.addCategory(Intent.CATEGORY_HOME);
@@ -905,34 +874,74 @@ private RecognitionListener listener = new RecognitionListener() {
                     SystemClock.sleep(250); //딜레이가 없으면 아래 명령어가 제대로 실행되지않음
                     startActivity(home); //완전히 바탕화면으로 가기위해선 두번 실행되야함
 
-                    touchPoint = new TouchPoint(x, y, 3000);
-                    Log.d("첫번째 시간", "첫번째 시간값");
-                    System.out.println(t1);
-
-                    SystemClock.sleep(500); // 동작에 딜레이를 준다.
-
-                    TouchEvent.postRestartAction(touchPoint);
-                    SystemClock.sleep(t1 + 3000);
-                    //TouchEvent.postPauseAction();
-
-                    // 해당 매크로의 동작 숫자만큼 화면에 터치를 가한다.
-                    for (int i = 0; i < length - 1; i++) {
-                        //맨 처음 대입은 delay 0초로 시작한다.
-                        cursor1.moveToNext();
-                        x = cursor1.getFloat(0);
-                        y = cursor1.getFloat(1);
-                        t2 = cursor1.getLong(2);
-                        //t2 = t2 - t1; //delay 할 시간값
-
-                        touchPoint = new TouchPoint(x, y, 3000);
-
-                        Log.d("두번째 시간", "두번째 시간값");
-                        System.out.println(t2);
-                        TouchEvent.postRestartAction(touchPoint);
-
-                        SystemClock.sleep(t2 + 3000); // 동작에 딜레이를 준다.
-                    }
-                    TouchEvent.postStopAction();
+                    SystemClock.sleep(250);
+                    TouchEvent.postTestAction();
+//                    // TODO: 2020-09-07 오늘
+//
+//                    //음성 명령어와 Macro 테이블 상의 이름을 비교하고 일치하면
+//                    // TouchOutput 의 메서드를 가져온다.
+//                    comparison = new comparison();
+//                    int Macro_Number; // 매크로 숫자
+//                    int length; // 해당 매크로의 동작 개수
+//
+//                    float x; // 대입할 X 좌표를 일시적으로 담을 변수
+//                    float y; // 대입할 Y 좌표를 일시적으로 담을 변수
+//                    long t1; // 선행 동작 시간값을 일시적으로 담을 변수
+//                    long t2; // 후행 동작 시간값을 일시적으로 담을 변수
+//
+//                    //음성명령어와 일치하는 매크로의 번호값을 반환받는다.
+//                    Macro_Number = comparison.comparison(Voices);
+//
+//                    // 매크로 번호와 일치하는 동작들을 조회한다.
+//                    String SQL = "SELECT Act_x, Act_y, Act_time FROM Act WHERE Act_Mac = " + Macro_Number;
+//
+//                    // 해당 동작들을 cursor1 변수에 담는다.
+//                    cursor1 = db.rawQuery(SQL, null);
+//                    length = cursor1.getCount();
+//
+//                    //맨 처음 대입은 delay 0초로 시작한다.
+//                    cursor1.moveToNext();  // 맨 처음 값을 넣는다.
+//                    x = cursor1.getFloat(0);
+//                    y = cursor1.getFloat(1);
+//                    t1 = cursor1.getLong(2);
+//
+//                    //홈화면으로 이동시킴
+//                    Intent home = new Intent(Intent.ACTION_MAIN);
+//                    home.addCategory(Intent.CATEGORY_HOME);
+//                    home.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    startActivity(home);
+//
+//                    SystemClock.sleep(250); //딜레이가 없으면 아래 명령어가 제대로 실행되지않음
+//                    startActivity(home); //완전히 바탕화면으로 가기위해선 두번 실행되야함
+//
+//                    touchPoint2 = new TouchPoint(x, y, 3000);
+//                    Log.d("첫번째 시간", "첫번째 시간값");
+//                    System.out.println(t1);
+//
+//                    SystemClock.sleep(500); // 동작에 딜레이를 준다.
+//
+//                    TouchEvent.postRestartAction(touchPoint2);
+//                    SystemClock.sleep(t1 + 3000);
+//                    //TouchEvent.postPauseAction();
+//
+//                    // 해당 매크로의 동작 숫자만큼 화면에 터치를 가한다.
+//                    for (int i = 0; i < length - 1; i++) {
+//                        //맨 처음 대입은 delay 0초로 시작한다.
+//                        cursor1.moveToNext();
+//                        x = cursor1.getFloat(0);
+//                        y = cursor1.getFloat(1);
+//                        t2 = cursor1.getLong(2);
+//                        //t2 = t2 - t1; //delay 할 시간값
+//
+//                        touchPoint2 = new TouchPoint(x, y, 3000);
+//
+//                        Log.d("두번째 시간", "두번째 시간값");
+//                        System.out.println(t2);
+//                        TouchEvent.postRestartAction(touchPoint2);
+//
+//                        SystemClock.sleep(t2 + 3000); // 동작에 딜레이를 준다.
+//                    }
+//                    TouchEvent.postStopAction();
                 }
 
             } else {
@@ -1014,6 +1023,9 @@ private RecognitionListener listener = new RecognitionListener() {
         alBuilder.setPositiveButton("예", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                TouchInput TI = (TouchInput) TouchInput.TouchInput;
+                TI.finish();
+
                 // 해당앱의 루트 액티비티 종료
                 finishAffinity();
                 // 현재 작업중인 쓰레드가 다 종료되면 종료
