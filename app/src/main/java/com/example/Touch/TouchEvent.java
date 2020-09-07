@@ -9,7 +9,7 @@ import org.greenrobot.eventbus.EventBus;
 public class TouchEvent {
     public static final int ACTION_START = 1;
     public static final int ACTION_PAUSE = 2;
-    public static final int ACTION_CONTINUE = 3;
+    public static final int ACTION_RESTART = 3;
     public static final int ACTION_STOP = 4;
 
     public int action;
@@ -24,14 +24,7 @@ public class TouchEvent {
         this.touchPoint = touchPoint;
     }
 
-    public void TouchPoints(TouchPoint touchPoint) {
-        this.touchPoint = touchPoint;
-    }
-
-
-    public int getAction() {return action;} 
-
-    public TouchPoint getTouchPoint() {return touchPoint;}
+    public int getAction() {return action;}
 
     public static void postStartAction(TouchPoint touchPoint) {
         postAction(new TouchEvent(ACTION_START, touchPoint));
@@ -41,8 +34,8 @@ public class TouchEvent {
         postAction(new TouchEvent(ACTION_PAUSE));
     }
 
-    public static void postContinueAction() {
-        postAction(new TouchEvent(ACTION_CONTINUE));
+    public static void postRestartAction(TouchPoint touchPoint) {
+        postAction(new TouchEvent(ACTION_RESTART, touchPoint));
     }
 
     public static void postStopAction() {
@@ -54,7 +47,6 @@ public class TouchEvent {
     }
 
     //문제 발생시 auto Touch 소스 참조
-
     @NonNull
     @Override
     public String toString() {

@@ -17,7 +17,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name="com.example.Tutorial.SplashActivity"/>
         <activity android:name=".AddActivity" />
         <activity android:name=".Setting" />
         <activity android:name=".Setting_name" />
@@ -25,17 +25,17 @@
         <activity
             android:name=".TouchInput"
             android:theme="@style/Theme.Transparent" />
+
         <activity
-            android:name=".TouchInput2"
-            android:theme="@style/Theme.Transparent" />
+            android:name="com.example.Tutorial.Tutorial"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
 
         <service
-            android:name="com.example.TouchService.Touch"
+            android:name="com.example.TouchService.Touch_In"
             android:enabled="true"
             android:exported="true"
             android:label="@string/permission"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
-
 
         <intent-filter>
             <action android:name="android.accessibilityservice.AccessibilityService" />
@@ -44,8 +44,8 @@
         <meta-data
             android:name="android.accessibilityservice"
             android:resource="@xml/accessibility_config" />
-
         </service>
+
 
         <service
             android:name=".FloatingViewService"
@@ -56,12 +56,10 @@
     </application>
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-
     <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE"
         tools:ignore="ProtectedPermissions" />
-
     <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
 </manifest>

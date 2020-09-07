@@ -15,7 +15,6 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -23,12 +22,12 @@ import static android.content.Context.WINDOW_SERVICE;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 /**
- * 屏幕工具类
+ * 화면 도구
  */
 public class WindowUtils {
 
     /**
-     * 判断是否是透明背景的Activity
+     * 배경이 투명한 활동인지 확인
      * @param context
      * @return
      */
@@ -71,14 +70,14 @@ public class WindowUtils {
     }
 
     /**
-     * 获取屏幕高度
+     * 화면 높이 가져 오기
      */
     public static int getScreenHeight(Context context){
         return context.getResources().getDisplayMetrics().heightPixels;
     }
 
     /**
-     * 获取虚拟按键高度
+     * 가상 키 높이 가져 오기
      * @param context
      * @return
      */
@@ -95,7 +94,7 @@ public class WindowUtils {
     }
 
     /**
-     * 检查是否存在虚拟按键栏
+     * 가상 버튼 모음이 있는지 확인
      * @param context
      */
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -118,8 +117,7 @@ public class WindowUtils {
     }
 
     /**
-     * 判断虚拟按键栏是否重写
-     *
+     * 가상 버튼 모음이 다시 작성되었는지 확인
      * @return
      */
     private static String getNavBarOverride() {
@@ -137,17 +135,17 @@ public class WindowUtils {
     }
 
     /**
-     * 全屏 - 隐藏状态栏和虚拟按键
+     * 전체 화면-상태 표시 줄 및 가상 버튼 숨기기
      * @param window
      */
     public static void setHideVirtualKey(Window window) {
-        //保持布局状态
+        //레이아웃 유지
         int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE|
-                //布局位于状态栏下方
+                //레이아웃은 상태 표시 줄 아래에 있습니다.
                 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION|
-                //全屏
+                //전체 화면
                 View.SYSTEM_UI_FLAG_FULLSCREEN|
-                //隐藏导航栏
+                //탐색 모음 숨기기
                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|
                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
         if (Build.VERSION.SDK_INT >= 19){
@@ -158,26 +156,24 @@ public class WindowUtils {
         window.getDecorView().setSystemUiVisibility(uiOptions);
     }
 
-    /**
-     * 改变屏幕亮度
-     */
-    /**	 * 设置页面的透明度	 * @param bgAlpha 1表示不透明	 */
+
+    /**	 페이지의 투명도 설정 @param bgAlpha 1은 불투명 함을 의미합니다.	 */
     public static void setBackgroundAlpha(Activity activity, float bgAlpha) {
         WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
         lp.alpha = bgAlpha;
         if (bgAlpha == 1) {
-            //不移除该Flag的话,在有视频的页面上的视频会出现黑屏的bug
+            //신고가 제거되지 않으면 동영상 페이지의 동영상에 검은 색 화면 버그가 있습니다.
             activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
         } else {
-            //此行代码主要是解决在华为手机上半透明效果无效的bug
+            //이 코드 줄은 주로 Huawei 전화에서 반투명 효과가 유효하지 않은 버그를 해결하기위한 것입니다.
             activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         }
         activity.getWindow().setAttributes(lp);
     }
 
     /**
-     * 获取状态栏高度
+     * 상태 표시 줄의 높이 가져 오기
      */
     public static int getStatusBarHeight(Context context) {
         int statusBarHeight = 0;
@@ -190,7 +186,7 @@ public class WindowUtils {
     }
 
     /**
-     * 将View全屏
+     * 전체 화면보기
      * @param context
      * @param view
      */
@@ -212,7 +208,7 @@ public class WindowUtils {
     }
 
     /**
-     * 将View退出全屏
+     * 전체 화면에서보기 종료
      */
     public static void exitFullScreen(Context context, View view){
         //找到父布局

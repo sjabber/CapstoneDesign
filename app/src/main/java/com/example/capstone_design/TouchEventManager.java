@@ -24,18 +24,17 @@ public class TouchEventManager {
         this.touchAction = touchAction;
     }
 
-    public int getTouchAction() {
-        return touchAction;
-    }
-
-    /**
-     * @return 감동?
-     */
-    public boolean isTouching() {
-        return touchAction == TouchEvent.ACTION_START || touchAction == TouchEvent.ACTION_CONTINUE;
-    }
-
-    public boolean isPaused() {
-        return touchAction == TouchEvent.ACTION_PAUSE;
-    }
+//    public int getTouchAction() {
+//        return touchAction;
+//    }
+//
+//
+//    //todo 추후 수정 및 삭제
+//    public boolean isTouching() {
+//        return touchAction == TouchEvent.ACTION_START || touchAction == TouchEvent.ACTION_CONTINUE;
+//    }
+//
+//    public boolean isPaused() {
+//        return touchAction == TouchEvent.ACTION_PAUSE;
+//    }
 }

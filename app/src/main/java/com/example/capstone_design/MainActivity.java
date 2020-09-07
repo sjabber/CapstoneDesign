@@ -3,7 +3,11 @@ package com.example.capstone_design;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
+import android.app.Activity;
+import android.app.Instrumentation;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,9 +16,18 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
+import android.provider.Settings;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,7 +35,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -33,26 +45,41 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
-import java.util.HashMap;
 import android.content.ContentValues;
 
-import com.example.TouchService.Touch;
+import com.example.Touch.TouchEvent;
+import com.example.Touch.TouchPoint;
+import com.example.TouchService.Touch_In;
 import com.example.permission.FloatWinPermissionCompat;
 import com.example.utils.AccessibilityUtil;
+import com.example.utils.ToastUtil;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    SQLiteDatabase db; // DB를 다루기 위한 SQLiteDabase 객체 생성
+    SQLiteDatabase db; // db를 다루기 위한 SQLiteDabase 객체 생성
+    Cursor cursor; // Select문 출력을 위해 사용하는 Cursor 형태객체 생성
+
+    Cursor cursor1; // 음성인식에서 사용할 Cursor 객체
+
+    //Comparison 클래스에서 사용할 변수들 -> STT(Speech To Text) 결과와 매크로 이름을 대조하기 위한 클래스
+    String Macro_Name;
+    int Macro_Number;
+
     SQLiteOpenHelper MacroDatabaseHelper;
     MacroDBHelper helper;
-    Cursor cursor; // Select문 출력을 위해 사용하는 Cursor 형태객체 생성
+    TouchPoint touchPoint;
+    comparison comparison;
+
     ListView listview; // Listview 객체 생성
     TextView textview;
     EditText EditName;
     String[] result; //ArrayAdapter에 넣을 배열을 생성한다.
     Boolean[] result2;
     String sql;
+    String sql1;
+    String sql2;
+    String sql3;
     ListUpdate update;
     CustomAdapter customAdapter;
     ArrayList<String> items;
@@ -60,19 +87,48 @@ public class MainActivity extends AppCompatActivity {
     Switch Switch1;
     TextView button1;
 
+    public static Activity MainActivity; // AddActivity.java 에서 사용할 객체를 선언한다.
+    private static final int PERMISSION = 1;
+    private static final int SYSTEM_ALERT_WINDOW_PERMISSION = 2084;
     private final String STRING_ACCESS = "시작하기";
     private final String STRING_START = "추가하기";
 
-
+    public static int Mac_number;
     public static int Position_N;
     public static int PositionNumber;
     private View Customlistview;
-    //private View Customlistview2;
+    private Menu menu;
+
+    //음성인식 기능 변수선언
+    public static String Voices;
+    Context cThis;
+    Intent SttIntent;
+    SpeechRecognizer mRecognizer;
+    EditText txtSystem;
+    String[] rs;
+    boolean status = true;
+    Handler handler,handler_stop;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        cThis = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //음성인식 권한 확인
+        if (Build.VERSION.SDK_INT >= 23) {
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.INTERNET,
+                    Manifest.permission.RECORD_AUDIO}, PERMISSION);
+        }
+
+        //안드로이드 버전이 충족되면 floating window 권한을 허용한다.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !Settings.canDrawOverlays(this)) {
+            askPermission();
+        }
+
+        //변수가 Main 자기 자신임을 확인 → Add에서 사용
+        MainActivity = MainActivity.this;
 
 
         //커스텀 리스트뷰 객체 호출 -> 메모리적재
@@ -94,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
         db = openOrCreateDatabase("Macro_DB", MODE_PRIVATE, null);
         helper = new MacroDBHelper(this);
         db = helper.getWritableDatabase();
+
 
         listview = (ListView)findViewById(R.id.Mac_List);
         textview = (TextView)findViewById(R.id.Mac_List_Text);
@@ -125,8 +182,43 @@ public class MainActivity extends AppCompatActivity {
         // 뷰에 컨텍스트 메뉴를 설정한다.
         registerForContextMenu(listview); // 리스트뷰를 길게 누르면 컨텍스트 메뉴가 나온다.
 
+
+        // TODO 음성인식1 기능
+        txtSystem=(EditText)findViewById(R.id.txtSystem);
+        //에디트텍스트 선택해도 가상키보드 안 뜨도록
+        txtSystem.setInputType(0);
+
+        // 음성인식 앱 켜지고 1초뒤 실행
+        handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (status) {
+                    Log.d("test","시작");
+                    speech_recognition();
+
+                    // handler.removeMessages(0);
+                    handler.postDelayed(this,6000);
+                }
+            }
+        },1000);
+
+        // 음성인식 앱 켜지고 일정시간(19 = 1 + 6 + 6 + 6) 이후 음성인식 종료
+        handler_stop = new Handler();
+        handler_stop.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (true) {
+                    speech_stop();
+                    Log.d("test","끝");
+                    changeIcon3();
+                    txtSystem.setText("마이크 버튼을 눌러주세요.");
+                }
+            }
+        },19000);
     }
 
+    //권한상태 점검
     @Override
     protected void onResume() {
         super.onResume();
@@ -147,6 +239,19 @@ public class MainActivity extends AppCompatActivity {
 
         // 뷰에 컨텍스트 메뉴를 설정한다.
         registerForContextMenu(listview); // 리스트뷰를 길게 누르면 컨텍스트 메뉴가 나온다.
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cursor.close();
+        db.close();
+
+        if(mRecognizer != null) {
+            mRecognizer.destroy();
+            mRecognizer.cancel();
+            mRecognizer=null;
+        }
     }
 
     // 컨텍스트 메뉴가 설정되어 있는 뷰를 길게 누르면 컨텍스트 메뉴 구성을 위해서 호출하는 메서드드
@@ -200,21 +305,33 @@ public class MainActivity extends AppCompatActivity {
             // 컨텍스트 메뉴의 삭제버튼을 눌렀을 경우 동작하는 내용
             case R.id.Delete_Mac :
                 try {
-                    int i = 1;
-
                     //선택된 매크로 삭제
                     sql = "DELETE FROM Macro WHERE Mac_name = (?)";
+
                     //선택된 매크로보다 (Primary key) Mac_num 의 크기가 크면 하나씩 줄여서 순서를 재조정한다.
-                    String sql1 = "UPDATE Macro SET Mac_num = Mac_num -1 WHERE Mac_num > (?)";
+                    sql1 = "UPDATE Macro SET Mac_num = Mac_num -1 WHERE Mac_num > (?)";
+
+                    //삭제된 매크로와 관련된 터치패턴도 삭제
+                    sql2 = "DELETE FROM Act WHERE Act_Mac = (?)";
+
+                    //터치패턴의 값도 재조정한다.
+                    sql3 = "UPDATE Act SET Act_Mac = Act_Mac -1 WHERE Act_Mac > (?)";
+
+                    //todo 추후 전역변수 -> 지역변수로 변경할것
 
                     String[] name1 = {result[position]};
                     String[] name2 = {Integer.toString(position)};
+                    String[] name3 = {Integer.toString(position + 1)};
                     //String[] name2 = {"" + (a + i - 1), "" + a + i};
 
-                    //삭제
+                    //매크로 삭제
                     db.execSQL(sql, name1);
                     //재조정
                     db.execSQL(sql1, name2);
+                    //매크로 패턴삭제
+                    db.execSQL(sql2, name3);
+                    //매크로 패턴 재조정
+                    db.execSQL(sql3, name3);
 
                     Toast toast = Toast.makeText(this, "매크로가 삭제되었습니다.", Toast.LENGTH_SHORT);
                     toast.show();
@@ -241,10 +358,46 @@ public class MainActivity extends AppCompatActivity {
     // 옵션 메뉴
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.option_menu, menu);
-        return true;
+        getMenuInflater().inflate(R.menu.option_menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
+
+    // 액션바 아이콘 이미지 변경
+    // 마이크 오류 발생시
+    public void changeIcon1 () {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                MenuItem item = menu.findItem(R.id.item3);
+                item.setIcon(R.drawable.mic_err);
+            }
+        });
+    }
+
+    // 마이크 정상 작동시
+    public void changeIcon2 () {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                MenuItem item = menu.findItem(R.id.item3);
+                item.setIcon(R.drawable.mic_in_operation);
+            }
+        });
+    }
+
+    // 마이크 대기 상태시
+    public void changeIcon3 () {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                MenuItem item = menu.findItem(R.id.item3);
+                item.setIcon(R.drawable.mic);
+            }
+        });
+    }
+
 
     //옵션 메뉴의 항목을 터치하면 호출되는 메소드드
     @Override
@@ -256,31 +409,38 @@ public class MainActivity extends AppCompatActivity {
             case R.id.item1 :
                 Intent intent1 = new Intent(MainActivity.this, Setting.class);
                 startActivity(intent1);
+            case R.id.item2 :
+                // 추후 튜토리얼 화면으로 넘어가는 부분을 여기에 넣을 예정
 
+            case R.id.item3:
+                speech_recognition(); // 음성인식 재가동
+                // 음성인식 한번 실행후 txtSystem이나 마이크 색상 변경 필요
         }
         return super.onOptionsItemSelected(item);
     }
 
-    //추가하기 버튼과 연결될 리스너
+    //추가하기 버튼과 연결될 리스너로 권한을 허용한 경우와 허용하지 않은 경우 실행되는 부분을 구분짓는다.
     class BtnListener1 implements View.OnClickListener{
         @Override
         public void onClick(View v) {
             //버튼을 누르면 발생하는 일을 적는다.
             switch (button1.getText().toString()) {
-                case STRING_START :
+                case STRING_START : //앱의 권한이 허용되어있지 않은경우
                     Intent intent = new Intent(MainActivity.this, AddActivity.class);
                     startActivity(intent);
                     break;
 
-                case STRING_ACCESS :
+                case STRING_ACCESS : //앱의 권한을 허용한 경우
                     requestAcccessibility();
+
                     break;
             }
         }
     }
 
+    //권한을 얻은 허용한 경우와 허용하지 않은경우 각각 버튼의 문구를 다르게 적용한다.
     private void checkState() {
-        boolean hasAccessibility = AccessibilityUtil.isSettingOpen(Touch.class, MainActivity.this);
+        boolean hasAccessibility = AccessibilityUtil.isSettingOpen(Touch_In.class, MainActivity.this);
         boolean hasWinPermission = FloatWinPermissionCompat.getInstance().check(this);
         if (hasAccessibility) {
             if (hasWinPermission) {
@@ -307,6 +467,13 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .setNegativeButton("취소", null).show();
+    }
+
+    //floating window 권한 허용을 위한 메소드
+    private void askPermission() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:" + getPackageName()));
+        startActivityForResult(intent, SYSTEM_ALERT_WINDOW_PERMISSION);
     }
 
     //ArrayListAdapter 를 상속한 커스텀어댑터 -> 커스텀 리스트뷰에 적용 (customAdapter)
@@ -530,18 +697,18 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                     });
-
                 }
-            } else {
-                holder = (ViewHolder) convertView.getTag();
             }
+//            else {
+//                //holder = (ViewHolder) convertView.getTag();
+//            }
 
             return v;
         }
     }
 
     // 커스텀 리스트뷰 갱신 메소드
-    // todo update메서드
+    // todo ListUpdate 메서드
     public class ListUpdate {
         public void ListUpdate() {
             items = new ArrayList<String>();
@@ -550,13 +717,13 @@ public class MainActivity extends AppCompatActivity {
             cursor = db.rawQuery(sql, null); // rawQuery : select 문에 사용됨.
 
             //db에 저장된 행 개수를 읽어온다.
-            int count = cursor.getCount();
+            Mac_number = cursor.getCount();
 
             // 불러온 행 개수만큼의 크기로 String 배열인 result 객체를 선언
-            result = new String[count];
+            result = new String[Mac_number];
             //result2 = new Boolean[count];
 
-            for (int i = 0; i < count; i++) {
+            for (int i = 0; i < Mac_number; i++) {
                 cursor.moveToNext(); // 모든 레코드를 읽어온다.
 
                 // 두번째 열(Mac_name)의 내용들을 읽어온다.
@@ -574,6 +741,308 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 음성입력이 DB에 있는경우 해당하는 매크로의 번호를 반환한다.
+    public class comparison {
+        public int comparison(String voice) {
+
+                try{
+                    String sql = "SELECT Mac_num, Mac_name FROM Macro WHERE Mac_name = ?";
+                    String[] V = new String[1];
+                    V[0] = voice;
+
+                    cursor = db.rawQuery(sql, V);
+                    cursor.moveToNext();
+
+                    Macro_Number = cursor.getInt(0);
+                    Macro_Name = cursor.getString(1);
+
+                } catch (Exception e) {
+                    Toast toast = Toast.makeText(MainActivity.this, "오류발생", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+
+            return Macro_Number;
+        }
+    }
+
+///////////////////////////////////////////////////////////////////////////////////////////
+    // todo 음성인식2 모듈
+private RecognitionListener listener = new RecognitionListener() {
+    @Override
+    public void onReadyForSpeech(Bundle bundle) {
+        changeIcon2();
+        txtSystem.setText("음성 인식 준비");
+    }
+
+    @Override
+    public void onBeginningOfSpeech() {
+        txtSystem.setText("음성 인식 중");
+    }
+
+    @Override
+    public void onRmsChanged(float v) {
+
+    }
+
+    @Override
+    public void onBufferReceived(byte[] bytes) {
+    }
+
+    @Override
+    public void onEndOfSpeech() {
+        Log.d("test","음성인식 끝");
+    }
+
+    @Override
+    public void onError(int i) {
+        changeIcon1();
+        mRecognizer.destroy();
+        mRecognizer.cancel();
+        Log.d("test","음성인식 에러");
+
+    }
+
+    @Override
+    public void onResults(Bundle results) {
+        // 음성인식 결과는 ArrayList 형태로 넘어온다.
+        String key= "";
+        key = SpeechRecognizer.RESULTS_RECOGNITION;
+        ArrayList<String> mResult = results.getStringArrayList(key);
+        rs = new String[mResult.size()];
+        mResult.toArray(rs);
+        Toast1(rs[0]);
+        FuncVoiceOrderCheck(rs[0]);
+
+        // mRecognizer.startListening(SttIntent);
+        Log.d("test",rs[0]);
+        changeIcon3();
+
+    }
+
+    @Override
+    public void onPartialResults(Bundle bundle) {
+        txtSystem.setText("onPartialResults..........."+"\r\n"+txtSystem.getText());
+    }
+
+    @Override
+    public void onEvent(int i, Bundle bundle) {
+        txtSystem.setText("onEvent..........."+"\r\n"+txtSystem.getText());
+    }
+};
+
+    //todo : 9/3 9/4
+    //입력된 음성 메세지 확인 후 동작 처리
+    private void FuncVoiceOrderCheck(String VoiceMsg){
+
+        if(VoiceMsg.length()<1)return;
+        VoiceMsg=VoiceMsg.replace(" ","");//음성입력의 공백을 제거한다.
+        Voices = VoiceMsg;
+
+        try{
+            // 현재 저장되어 있는 매크로 이름을 불러와서 리스트에 저장
+            // DB에 없는 음성명령을 내릴경우 발생하는 오류처리
+
+            Cursor c1 = db.rawQuery("SELECT Mac_name from Macro", null);
+            ArrayList<String> Mac_name_list = new ArrayList<>();
+            while (c1.moveToNext()) {
+                String str_load = c1.getString(0);
+                Mac_name_list.add(str_load);
+            }
+
+            if(Mac_name_list.contains(Voices)) {
+
+                if(VoiceMsg.equals("홈")) {
+                    Intent intent = new Intent(Intent.ACTION_MAIN); //태스크의 첫 액티비티로 시작
+                    intent.addCategory(Intent.CATEGORY_HOME);   //홈화면 표시
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); //새로운 태스크를 생성하여 그 태스크안에서 액티비티 추가
+                    startActivity(intent);
+
+                    SystemClock.sleep(250);
+                    startActivity(intent);
+                } else if(VoiceMsg.equals("헤이요")) {
+                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.example.capstone_design");
+                    startActivity(launchIntent);
+                } else if(VoiceMsg.equals("종료")) {
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                } else {
+                    TouchEvent.postRestartAction(touchPoint);
+
+
+                    //음성 명령어와 Macro 테이블 상의 이름을 비교하고 일치하면
+                    // TouchOutput 의 메서드를 가져온다.
+                    comparison = new comparison();
+                    int Macro_Number; // 매크로 숫자
+                    int length; // 해당 매크로의 동작 개수
+
+                    float x; // 대입할 X 좌표를 일시적으로 담을 변수
+                    float y; // 대입할 Y 좌표를 일시적으로 담을 변수
+                    long t1; // 선행 동작 시간값을 일시적으로 담을 변수
+                    long t2; // 후행 동작 시간값을 일시적으로 담을 변수
+
+                    //음성명령어와 일치하는 매크로의 번호값을 반환받는다.
+                    Macro_Number = comparison.comparison(Voices);
+
+                    // 매크로 번호와 일치하는 동작들을 조회한다.
+                    String SQL = "SELECT Act_x, Act_y, Act_time FROM Act WHERE Act_Mac = " + Macro_Number;
+
+                    // 해당 동작들을 cursor1 변수에 담는다.
+                    cursor1 = db.rawQuery(SQL, null);
+                    length = cursor1.getCount();
+
+
+                    //맨 처음 대입은 delay 0초로 시작한다.
+                    cursor1.moveToFirst();  // 맨 처음 값을 넣는다.
+                    x = cursor1.getFloat(0);
+                    y = cursor1.getFloat(1);
+                    t1 = cursor1.getLong(2);
+
+                    //홈화면으로 이동시킴
+                    Intent home = new Intent(Intent.ACTION_MAIN);
+                    home.addCategory(Intent.CATEGORY_HOME);
+                    home.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(home);
+
+                    SystemClock.sleep(250); //딜레이가 없으면 아래 명령어가 제대로 실행되지않음
+                    startActivity(home); //완전히 바탕화면으로 가기위해선 두번 실행되야함
+
+                    touchPoint = new TouchPoint(x, y, 3000);
+                    Log.d("첫번째 시간", "첫번째 시간값");
+                    System.out.println(t1);
+
+                    SystemClock.sleep(500); // 동작에 딜레이를 준다.
+
+                    TouchEvent.postRestartAction(touchPoint);
+                    SystemClock.sleep(t1 + 3000);
+                    //TouchEvent.postPauseAction();
+
+                    // 해당 매크로의 동작 숫자만큼 화면에 터치를 가한다.
+                    for (int i = 0; i < length - 1; i++) {
+                        //맨 처음 대입은 delay 0초로 시작한다.
+                        cursor1.moveToNext();
+                        x = cursor1.getFloat(0);
+                        y = cursor1.getFloat(1);
+                        t2 = cursor1.getLong(2);
+                        //t2 = t2 - t1; //delay 할 시간값
+
+                        touchPoint = new TouchPoint(x, y, 3000);
+
+                        Log.d("두번째 시간", "두번째 시간값");
+                        System.out.println(t2);
+                        TouchEvent.postRestartAction(touchPoint);
+
+                        SystemClock.sleep(t2 + 3000); // 동작에 딜레이를 준다.
+                    }
+                    TouchEvent.postStopAction();
+                }
+
+            } else {
+                Toast toast = Toast.makeText(MainActivity.this, "해당 매크로가 존재하지 않습니다.", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+
+        } catch (Exception e) {
+            Toast toast = Toast.makeText(MainActivity.this, "오류발생", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+
+
+
+        //카카오톡 어플로 이동
+//        if(VoiceMsg.equals("카카오톡")){
+//            Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.kakao.talk");
+//            startActivity(launchIntent);
+//        }
+
+
+    }
+
+
+    // 입력한 음섬 메시지 토스트
+    public void Toast1(String VoiceMsg) {
+        if(VoiceMsg.length()<1){
+            return;
+        }
+        VoiceMsg=VoiceMsg.replace(" ","");
+        Toast t1 = Toast.makeText(this, VoiceMsg, Toast.LENGTH_SHORT);
+        t1.show();
+    }
+
+    // 음성인식 객체 생성 및 실행
+    public void speech_recognition() {
+        // 어플이 실행되면 자동으로 1초뒤에 음성인식 시작
+        txtSystem.setText("어플 실행");
+        // 음성인식
+        // 음성인식 인텐트 생성
+        SttIntent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        SttIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,getApplicationContext().getPackageName());
+        // 음성인식 언어 설정
+        SttIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");
+        SttIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 4000);
+        // 음성인식 객체
+        mRecognizer=SpeechRecognizer.createSpeechRecognizer(cThis);
+        // 음성인식 리스너 등록
+        mRecognizer.setRecognitionListener(listener);
+        // 음성인식 시작
+        mRecognizer.startListening(SttIntent);
+
+        Log.d("test","음성인식");
+    }
+
+    // status 상태 false로 변환 -> 음성인식 종료시 필요
+    public void status_false() {
+        status = false;
+    }
+
+    // 음성인식 종료
+    public void speech_stop() {
+        if(mRecognizer != null) {
+            mRecognizer.destroy();
+            mRecognizer.cancel();
+            mRecognizer=null;
+        }
+        status_false();
+    }
+
+    // 뒤로가기 버튼
+    @Override
+    public void onBackPressed() {
+        // AlertDialog 빌더를 이용해 종료시 발생시킬 창을 띄운다
+        android.app.AlertDialog.Builder alBuilder = new android.app.AlertDialog.Builder(this);
+        alBuilder.setMessage("종료하시겠습니까?");
+
+        // "예" 버튼을 누르면 실행되는 리스너
+        alBuilder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // 해당앱의 루트 액티비티 종료
+                finishAffinity();
+                // 현재 작업중인 쓰레드가 다 종료되면 종료
+                System.runFinalization();
+                // 현재 액티비티 종료
+                System.exit(0);
+            }
+        });
+        // "아니오" 버튼을 누르면 실행되는 리스너
+        alBuilder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                return; // 아무런 작업도 하지 않고 돌아간다
+            }
+        });
+        // "리셋" 버튼을 누르면 음성인식 재시작
+        alBuilder.setNeutralButton("음성인식 재시작", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent_main = getIntent();
+                finish();
+                startActivity(intent_main);
+            }
+        });
+
+
+        alBuilder.setTitle("프로그램 종료");
+        alBuilder.show(); // AlertDialog.Bulider로 만든 AlertDialog를 보여준다.
+    }
+
 
 }
-//Log.d("Problem", "컨텍스트메뉴 문제발생지점"); -> 문제발생시 위치확인용으로 쓸 로그문 추후 삭제

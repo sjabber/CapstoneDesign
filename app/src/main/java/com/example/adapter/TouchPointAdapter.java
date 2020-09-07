@@ -1,21 +1,12 @@
 package com.example.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-import com.example.capstone_design.R;
-import com.example.Touch.TouchPoint;
-import java.util.List;
 
-import static com.example.capstone_design.TouchInput2.touchPoint;
+import com.example.Touch.TouchPoint;
+
+import static com.example.capstone_design.TouchInput.touchPoint;
 
 public class TouchPointAdapter extends View implements View.OnClickListener {
 
@@ -31,7 +22,7 @@ public class TouchPointAdapter extends View implements View.OnClickListener {
         if (onClickListener != null) {
             TouchPoint touchPoint_ = touchPoint;
             onClickListener.onClickListener(v, touchPoint_);
-            Log.d("브레이크포인트_1", "브레이크포인트_1");
+//            Log.d("브레이크포인트_1", "브레이크포인트_1");
         }
     }
 

@@ -3,8 +3,8 @@ package com.example.TouchService;
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.GestureDescription;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Path;
-import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,21 +12,17 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.TextView;
-
 import androidx.annotation.RequiresApi;
-
 import com.example.Touch.TouchEvent;
 import com.example.Touch.TouchPoint;
-import com.example.adapter.TouchPointAdapter;
 import com.example.capstone_design.R;
 import com.example.capstone_design.TouchEventManager;
+import com.example.capstone_design.TouchInput;
 import com.example.utils.DensityUtil;
 import com.example.utils.WindowUtils;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -34,17 +30,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
 
-import static com.example.capstone_design.TouchInput2.action;
-import static com.example.capstone_design.TouchInput2.downTime;
-import static com.example.capstone_design.TouchInput2.eventTime;
-import static com.example.capstone_design.TouchInput2.x_data;
-import static com.example.capstone_design.TouchInput2.y_data;
-import static com.example.capstone_design.TouchInput2.touchPoint;
+import static com.example.capstone_design.TouchInput.touchPoint;
 
 
+// 직접적으로 화면에 터치를 가하는 서비스 클래스
+// 전역변수들 추후에 지역변수로 바꿀 수 있으면 변경하기
 
 @RequiresApi(api = Build.VERSION_CODES.N)
-public class Touch extends AccessibilityService {
+public class Touch_In extends AccessibilityService {
 
     private WindowManager mWindowManager;
     private TouchPoint autoTouchPoint; // 자동클릭 이벤트
@@ -52,7 +45,7 @@ public class Touch extends AccessibilityService {
     private TextView mFloatingView;
     // 카운트 다운
     private float countDownTime;
-    private int LAYOUT_FLAG;
+//    private int LAYOUT_FLAG;
     private Runnable touchViewRunnable;
     private DecimalFormat floatDf = new DecimalFormat("#0.0");
     private TouchEvent events;
@@ -79,22 +72,42 @@ public class Touch extends AccessibilityService {
                 TouchPoint touch = touchPoint;
                 autoTouchPoint = touch;
                 onAutoClick();
-                Log.d("터치신호 입력", "브레이크포인트1");
+                break;
+
+            case TouchEvent.ACTION_PAUSE:
+                handler.removeCallbacks(autoTouch);
+                handler.removeCallbacks(touchViewRunnable);
+                //removeTouchView();
+                break;
+
+            case TouchEvent.ACTION_RESTART:
+                Log.d("음성 매크로 시작", "음성매크로 시작");
+                TouchPoint touch2 = touchPoint;
+                autoTouchPoint = touch2;
+                onAutoClick2();
+
+            case TouchEvent.ACTION_STOP:
+                handler.removeCallbacks(autoTouch);
+                handler.removeCallbacks(touchViewRunnable);
+                //removeTouchView();
+                autoTouchPoint = null;
                 break;
         }
     }
 
     private void onAutoClick() {
         if (autoTouchPoint != null) {
-            //autoTouchPoint 가 null 이 아니어야만 터치가 작동한다.
-            //TouchPoint autoTouchPoint -> 여기에 값을 어떻게 집어넣느냐..
-            //event.getTouchPoint();를 집어넣는다.
-            //event.getTouchPoint()는 무엇이냐 -> TouchPoint의 touch포인트를 리턴한 객체임 결국엔.
-            //Auto Touch 는 어떻게 했길래 autoTouchService 가 intent 없이 실행된걸까
-
-            handler.postDelayed(autoTouch, 1 * 1000L);
+            handler.postDelayed(autoTouch, 1 * 500L);
             //showTouchView();
-            Log.d("onAutoClick", "onAutoClick");
+            Log.d("onAutoClick", "화면에 스스로 터치를 가한다.");
+        }
+    }
+
+    private void onAutoClick2() {
+        if (autoTouchPoint != null) {
+            handler.postDelayed(autoTouch2, 1 * 500L);
+            showTouchView();
+            Log.d("onAutoClick2", "화면에 스스로 터치를 가한다.");
         }
     }
 
@@ -122,22 +135,56 @@ public class Touch extends AccessibilityService {
                     Log.d("취소", "취소");
                 }
             }, null);
+
+            SystemClock.sleep(1000);
+            Intent intent = new Intent(getApplicationContext(), TouchInput.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent); //자기자신을 재실행한다.
+        }
+    };
+
+    private Runnable autoTouch2 = new Runnable() {
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        @Override
+        public void run() {
+            int width = DensityUtil.dip2px(Touch_In.this, 40);
+            int height = DensityUtil.dip2px(Touch_In.this, 40);
+
+            Log.d("좌표터치", "x= " + autoTouchPoint.getX() + ", y= " + autoTouchPoint.getY());
+            Path path = new Path();
+            path.moveTo(autoTouchPoint.getX(), autoTouchPoint.getY());
+            GestureDescription.Builder builder = new GestureDescription.Builder();
+            GestureDescription gestureDescription = builder.addStroke(
+                    new GestureDescription.StrokeDescription(path, 0, 100))
+                    .build();
+            dispatchGesture(gestureDescription, new AccessibilityService.GestureResultCallback() {
+                @Override
+                public void onCompleted(GestureDescription gestureDescription) {
+                    super.onCompleted(gestureDescription);
+                    Log.d("끝", "끝");
+                }
+
+                @Override
+                public void onCancelled(GestureDescription gestureDescription) {
+                    super.onCancelled(gestureDescription);
+                    Log.d("취소", "취소");
+                }
+            }, null);
         }
     };
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-
     }
 
     @Override
     public void onInterrupt() {
-
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
         handler.removeCallbacksAndMessages(null);
         removeTouchView();
     }
@@ -146,10 +193,10 @@ public class Touch extends AccessibilityService {
         if (autoTouchPoint != null) {
             //터치 포인트 생성View
             if (mFloatingView == null) {
-                mFloatingView = (TextView) LayoutInflater.from(this).inflate(R.layout.service1, null);
+                mFloatingView = (TextView) LayoutInflater.from(this).inflate(R.layout.window_touch_point, null);
             }
             //터치 포인트 표시View
-            if (mWindowManager != null && !mFloatingView.isAttachedToWindow()) {
+            else if (mWindowManager != null && !mFloatingView.isAttachedToWindow()) {
                 int width = DensityUtil.dip2px(this, 40);
                 int height = DensityUtil.dip2px(this, 40);
                 WindowManager.LayoutParams params = WindowUtils.newWmParams(width, height);
@@ -180,7 +227,6 @@ public class Touch extends AccessibilityService {
             handler.post(touchViewRunnable);
         }
     }
-
 
 
 

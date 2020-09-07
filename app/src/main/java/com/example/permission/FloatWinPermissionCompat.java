@@ -26,7 +26,7 @@ public class FloatWinPermissionCompat {
     private CompatImpl compat;
 
     private FloatWinPermissionCompat() {
-        // 6.0 以下的处理
+        // 6.0 버전 이후 처리
         if (Build.VERSION.SDK_INT < 23) {
             if (RomUtils.isMeizu()) {
                 compat = new MeizuCompatImpl();

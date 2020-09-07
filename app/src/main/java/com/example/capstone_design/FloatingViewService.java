@@ -1,9 +1,9 @@
 package com.example.capstone_design;
 
-import android.app.NotificationManager;
+
 import android.app.Service;
 import android.content.ComponentName;
-import android.content.DialogInterface;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.PixelFormat;
@@ -15,22 +15,22 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.PopupMenu;
-import android.widget.PopupWindow;
 import android.widget.Toast;
+import java.util.ArrayList;
 
-//import androidx.annotation.RequiresApi;
-
-import com.example.dialog.AddPointDialog;
-import com.example.utils.DialogUtils;
 
 import static com.example.capstone_design.AddActivity.inputedName; //AddActivity 에서 입력받은 값을 저장해놓은 변수
+import static com.example.capstone_design.MainActivity.Mac_number;
 
 
 
 public class FloatingViewService extends Service implements View.OnClickListener {
 
-    private AddPointDialog addPointDialog;
+    public static int num;
+    public static ArrayList<Float> x_data_list = new ArrayList<Float>(); //좌표값을 임시저장할 리스트
+    public static ArrayList<Float> y_data_list = new ArrayList<Float>();
+    public static ArrayList<Long> now_time_list = new ArrayList<Long>();
+
     private WindowManager mWindowManager;
     private View mFloatingView;
     private View collapsedView;
@@ -39,12 +39,16 @@ public class FloatingViewService extends Service implements View.OnClickListener
     private Intent intent;
     private Intent intent2;
     MacroDBHelper helper;
-    SQLiteDatabase db = null;
-    private final String pakageName = "com.example.capstone_design";
+    MacroDBHelper helper2;
 
+    SQLiteDatabase db = null;
+    SQLiteDatabase DB = null;
+
+    TouchInput touchInput = (TouchInput) TouchInput.TouchInput; // 저장버튼을 누르면 TouchInput 을 완전히 종료하기 위함
 
 
     public FloatingViewService() {
+
     }
 
     @Override
@@ -57,8 +61,10 @@ public class FloatingViewService extends Service implements View.OnClickListener
     public void onCreate() {
         super.onCreate();
 
+
         helper = new MacroDBHelper(this);
         db = helper.getWritableDatabase();
+
 
         //레이아웃 인플레이터로 xml에서 위젯 레이아웃을 가져온다.
         mFloatingView = LayoutInflater.from(this).inflate(R.layout.activity_floating_widget, null);
@@ -80,11 +86,9 @@ public class FloatingViewService extends Service implements View.OnClickListener
         params.gravity = Gravity.CENTER | Gravity.TOP;
         params.x -= 600; //중앙 0으로부터 -650만큼 이동한 위치에서 시작(값을 너무 크게주면 매끄럽지 못함)
 
-
         //Windows 서비스 받기 및 floating view 추가
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         mWindowManager.addView(mFloatingView, params);
-
 
         //floating view 축소, 확대 보기
         collapsedView = mFloatingView.findViewById(R.id.layoutCollapsed);
@@ -92,7 +96,6 @@ public class FloatingViewService extends Service implements View.OnClickListener
 
         //buttonStop 을 눌렀을 때 이 어플리케이션이 다시 실행되도록 하기 위한 Intent 값 저장객체
         //intent = this.getPackageManager().getLaunchIntentForPackage(pakageName);
-
 
 
         //클릭리스너 추가하여 닫기버튼이나 확장 view 적용
@@ -153,20 +156,24 @@ public class FloatingViewService extends Service implements View.OnClickListener
         });
 
     }
-//    class ClickWindow implements View.OnClickListener{
-//
-//    }
+
 
 
     //@RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
+            switch (v.getId()) {
 
             //이 두가지경우 똑같은 일을 수행하므로 묶는다.
             case R.id.buttonClose:
 
             case R.id.buttonClose2:
+
+                //취소됐으므로 ArrayList 에 임시로 들어간 값들을 전부 삭제한다.
+                x_data_list.clear();
+                y_data_list.clear();
+                now_time_list.clear();
+
                 Toast toast1 = Toast.makeText(FloatingViewService.this, "취소됐습니다.", Toast.LENGTH_SHORT);
                 toast1.show();
                 //뷰를 종료한다.
@@ -186,22 +193,21 @@ public class FloatingViewService extends Service implements View.OnClickListener
                 String[] arg = {inputedName, Integer.toString(0)};
 
                 try{
+                    // TODO: 저장버튼을 누른 시점에 좌표값이 저장되도록 구현한 부분
+                    for(int i = 0; i < x_data_list.size(); i++) {
+                        insertData(Mac_number+1, x_data_list.get(i), y_data_list.get(i), now_time_list.get(i));
+                    }
                     db.execSQL(sql, arg);
+
                     Toast toast = Toast.makeText(getApplicationContext(), "저장되었습니다.", Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.LEFT|Gravity.BOTTOM, 330, 180);
                     toast.show();
 
-                    //////////////////////추가내역///////////////////////////////////////////////////////////
-                    //작업이 완료되면 노티피케이션 메시지도 사라지게 한다.
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-                        stopForeground(STOP_FOREGROUND_REMOVE); //위의 id 10을 가져온다.
-                        NotificationManager manager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-                        manager.cancel(10);
-                    }
+                    touchInput.finish(); //TouchInput Activity 종료
+                    Log.d("저장버튼", "매크로 정보 저장완료");
                 }
-                //////////////////////////////////////////////////////////////////////////////
                 catch (Exception e) {
-                    Log.d("Problem1", "쿼리문제 발생지점");
+                    Log.d("저장버튼 문제", "쿼리문제 발생지점");
                     Toast.makeText(getApplicationContext(), "데이터베이스 오류1", Toast.LENGTH_SHORT).show();
                 }
 
@@ -211,22 +217,16 @@ public class FloatingViewService extends Service implements View.OnClickListener
                 ComponentName cn = intent.getComponent();
                 intent2 = Intent.makeRestartActivityTask(cn);
                 startActivity(intent2); //자기자신을 재실행한다.
+                num = 0;
 
                 stopSelf(); //위 작업을 마치고 뷰를 종료함.
                 break;
 
             case R.id.buttonStart:
-
                 //핵심 기능이 완성되면 여기서 구동되도록 실현시킨다.
-                Intent intent = new Intent(FloatingViewService.this, TouchInput2.class);
+                Intent intent = new Intent(FloatingViewService.this, TouchInput.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-
-//                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                    startForegroundService(intent);
-//                } else {
-//                    startService(intent);
-//                }
 
                 break;
                 //todo : branch2 분기점
@@ -238,5 +238,20 @@ public class FloatingViewService extends Service implements View.OnClickListener
         super.onDestroy();
         if (mFloatingView != null) mWindowManager.removeView(mFloatingView);
     }
+
+    // DB에 값들을 일괄적으로 집어넣기 위한 메서드
+    public long insertData(int Act_Mac, float x_data_list, float y_data_list, long now_time_list) {
+        helper2 = new MacroDBHelper(this);
+        DB = helper2.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(MacroDBHelper.MAC_NUM, Act_Mac); //Macro 테이블의 마지막 Mac_num 값에 +1 값을 집어넣도록 한다.
+        values.put(MacroDBHelper.X, x_data_list);
+        values.put(MacroDBHelper.Y, y_data_list);
+        values.put(MacroDBHelper.TIME, now_time_list);
+
+        return DB.insert(MacroDBHelper.TABLE_NAME, null, values);
+    }
+
 
 }

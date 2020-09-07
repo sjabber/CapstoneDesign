@@ -7,10 +7,9 @@
         android:id="@+id/transparent_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#41AC2E2E"
+        android:background="#2FEC6262"
         android:clickable="true"
-        android:onClick="onClick">
-    </View>
+        android:onClick="onClick"></View>
 
 
 </LinearLayout>

@@ -9,6 +9,15 @@ public class MacroDBHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "Macro_DB";
     private static final int DB_VERSION = 3;
 
+
+    public static final String TABLE_NAME = "Act";
+    public static final String ACT_NUM = "Act_num";
+    public static final String MAC_NUM = "Act_Mac";
+    public static final String X = "Act_x";
+    public static final String Y = "Act_y";
+    public static final String TIME = "Act_time";
+
+
     public MacroDBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
@@ -39,13 +48,13 @@ public class MacroDBHelper extends SQLiteOpenHelper {
         }
 
         if (oldVersion < 3) {
-            String sql_2 = "CREATE TABLE Act("
-                    + "Act_num INTEGER PRIMARY KEY, "
-                    + "Act_Mac INTEGER, "
-                    + "Act_x REAL, "
-                    + "Act_y REAL, "
-                    + "Act_time REAL, "
-                    + "FOREIGN KEY(Act_Mac) REFERENCES Macro(Mac_num))";
+            String sql_2 = " CREATE TABLE " + TABLE_NAME + "("
+                    + ACT_NUM +" INTEGER PRIMARY KEY, "
+                    + MAC_NUM + " INTEGER, "
+                    + X + " REAL, "
+                    + Y + " REAL, "
+                    + TIME + " REAL, "
+                    + "FOREIGN KEY (" + MAC_NUM +") REFERENCES Macro(Mac_num))";
             db.execSQL(sql_2);
         }
     }
