@@ -28,8 +28,9 @@
         <TextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
+            android:layout_height="wrap_content"
             android:gravity="center"
+            android:layout_gravity="center"
             android:text="내 매크로를 한 번에"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textSize="30sp" />
