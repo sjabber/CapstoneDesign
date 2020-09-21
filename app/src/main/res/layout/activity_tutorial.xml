@@ -1,37 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+    tools:showIn="@layout/activity_tutorial"
+    android:background="#3E74C7">
 
     <androidx.viewpager.widget.ViewPager
-        android:id="@+id/vpPager"
+        android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="108dp"/>
+        android:layout_height="match_parent" />
 
-    <me.relex.circleindicator.CircleIndicator
-        android:id="@+id/indicator"
-        app:ci_drawable="@drawable/black_radius"
-        app:ci_height="7dp"
-        app:ci_width="7dp"
-        app:ci_margin="4dp"
+    <!--    하단 점이 들어갈 레이아웃-->
+    <!--    layout_alignParent로 아래에 위치-->
+    <LinearLayout
+        android:id="@+id/layoutDots"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="-108dp"/>
+        android:layout_height="@dimen/dots_height"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/dots_margin_bottom"
+        android:gravity="center"
+        android:orientation="horizontal"></LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:alpha=".5"
+        android:layout_above="@id/layoutDots"
+        android:background="@android:color/white" />
+
+    <!--    다음 버튼-->
+    <!--    layout_alignParent로 아래 오른쪽에 위치-->
+    <Button
+        android:id="@+id/btn_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:background="@null"
+        android:text="@string/next"
+        android:textColor="@android:color/white" />
+
+    <!--    스킵 버튼-->
+    <!--    layout_alignParent로 아래 왼쪽에 위치-->
+    <Button
+        android:id="@+id/btn_skip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:background="@null"
+        android:text="@string/skip"
+        android:textColor="@android:color/white" />
 
     <Button
-        android:id="@+id/tutorial_btn"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginRight="30dp"
-        android:backgroundTint="#A9A9A9"
-        android:text="앱 시작하기"
-        android:textSize="20sp" />
+        android:layout_marginTop="25sp"
+        android:id="@+id/settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:background="@null"
+        android:backgroundTint="#FFFFFF"
+        android:clickable="true"
+        android:text="설정 바로가기"
+        android:textColor="@color/White" />
 
-
-</LinearLayout>
+</RelativeLayout>

@@ -23,7 +23,6 @@ import android.provider.Settings;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
-import android.text.SpannableString;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;

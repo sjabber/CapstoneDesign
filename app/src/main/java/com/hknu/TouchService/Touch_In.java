@@ -73,13 +73,12 @@ public class Touch_In extends AccessibilityService {
         EventBus.getDefault().register(this);
         Log.d("서비스로 전환", "서비스로 전환");
         mWindowManager = WindowUtils.getWindowManager(this);
-
     }
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onReciverTouchEvent(@NotNull TouchEvent event) {
-        Log.d("AutoTouch", "onReciverTouchEvent: " + event.toString());
+        Log.d("AutoTouch", "onReCiVerTouchEvent: " + event.toString());
         TouchEventManager.getInstance().setTouchAction(event.getAction());
         handler.removeCallbacks(autoTouch);
 

@@ -1,116 +1,201 @@
 package com.hknu.Tutorial;
-
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.provider.Settings;
+import android.text.Html;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.hknu.capstone_design.MainActivity;
 import com.hknu.capstone_design.R;
 
-import me.relex.circleindicator.CircleIndicator;
-
 public class Tutorial extends AppCompatActivity {
-    private static final int SYSTEM_ALERT_WINDOW_PERMISSION = 1;
-    FragmentPagerAdapter adapterViewPager;
-    private static final int PERMISSION = 1;
-    Button start;
+
+    private ViewPager viewPager;
+    private PagerAdapter pagerAdapter;
+    private LinearLayout dotsLayout;
+    private TextView[] dots;
+    private int[] layouts;
+    private Button btnSkip, btnNext, setting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        }
+
         setContentView(R.layout.activity_tutorial);
 
-//        //음성인식 권한 확인
-//        if (Build.VERSION.SDK_INT >= 23) {
-//            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.INTERNET,
-//                    Manifest.permission.RECORD_AUDIO}, PERMISSION);
-//        }
-//
-//        //안드로이드 버전이 충족되면 floating window 권한을 허용한다.
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !Settings.canDrawOverlays(this)) {
-//            askPermission();
-//        }
+        viewPager = findViewById(R.id.view_pager);
+        dotsLayout = findViewById(R.id.layoutDots);
+        btnSkip = findViewById(R.id.btn_skip);
+        btnNext = findViewById(R.id.btn_next);
+        setting = findViewById(R.id.settings);
 
 
+// 변화될 레이아웃들 주소
+        layouts = new int[] {
+                R.layout.page1,
+                R.layout.page2,
+                R.layout.page3,
+                R.layout.page4,
+                R.layout.page5,
+                R.layout.page6};
 
+        addBottomDots(0);
 
-        ViewPager vpPager = (ViewPager) findViewById(R.id.vpPager);
-        adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
-        vpPager.setAdapter(adapterViewPager);
+        changeStatusBarColor();
 
-        //하단 튜토리얼 페이지를 안내해주는 원표시
-        CircleIndicator indicator = (CircleIndicator) findViewById(R.id.indicator);
-        indicator.setViewPager(vpPager);
+        pagerAdapter = new PagerAdapter();
+        viewPager.setAdapter(pagerAdapter);
+        viewPager.addOnPageChangeListener(viewPagerPageChangeListener);
 
-        //튜토리얼 종료 버튼
-        start = findViewById(R.id.tutorial_btn);
-        start.setOnClickListener(new View.OnClickListener() {
+        setting.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Intent newIntent = new Intent(Tutorial.this, MainActivity.class);
-                startActivity(newIntent);
-                Log.d("test","튜토리얼 실행");
+            public void onClick(View v) {
+                Intent intent = new Intent(Settings.ACTION_SETTINGS);
+                startActivity(intent);
+            }
+        });
 
-                ActivityCompat.finishAffinity(Tutorial.this);
+
+        btnSkip.setOnClickListener(new View.OnClickListener() { // 건너띄기 버튼 클릭시 메인화면으로 이동
+            @Override
+            public void onClick(View v) {
+                moveMainPage();
+            }
+        });
+
+        btnNext.setOnClickListener(new View.OnClickListener() { // 하나의 버튼을 이용하기 때문에 if else로 두가지 동작을 하게 만듬
+            @Override
+            public void onClick(View v) {
+                int current = getItem(+1);
+                if (current < layouts.length) {
+//                    마지막 페이지가 아니라면 다음 페이지로 이동
+                    viewPager.setCurrentItem(current);
+                } else {
+//                마지막 페이지라면 메인페이지로 이동
+                    moveMainPage();
+                }
             }
         });
     }
 
-    public static class MyPagerAdapter extends FragmentPagerAdapter {
-        private static int NUM_ITEMS = 3;
+    private void addBottomDots(int currentPage) { // 하단 점(선택된 점, 선택되지 않은 점)
+        dots = new TextView[layouts.length]; // 레이아웃 크기만큼 하단 점 배열에 추가
 
-        public MyPagerAdapter(FragmentManager fragmentManager) {
-            super(fragmentManager);
+        int[] colorsActive = getResources().getIntArray(R.array.array_dot_active);
+        int[] colorsInactive = getResources().getIntArray(R.array.array_dot_inactive);
+
+        dotsLayout.removeAllViews();
+        for (int i = 0; i < dots.length; i++) {
+            dots[i] = new TextView(this);
+            dots[i].setText(Html.fromHtml("&#8226;"));
+            dots[i].setTextSize(35);
+            dots[i].setTextColor(colorsInactive[currentPage]);
+            dotsLayout.addView(dots[i]);
         }
 
-        // Returns total number of pages
-        @Override
-        public int getCount() {
-            return NUM_ITEMS;
-        }
+        if (dots.length > 0)
+            dots[currentPage].setTextColor(colorsActive[currentPage]);
+    }
 
-        // Returns the fragment to display for that page
-        @Override
-        public Fragment getItem(int position) {
-            switch (position) {
-                case 0:
+    private int getItem(int i) {
+        return viewPager.getCurrentItem() + i;
+    }
 
-                    return Tutorial_1.newInstance(0, "Page # 1");
-                case 1:
-                    return Tutorial_2.newInstance(1, "Page # 2");
-                case 2:
-                    return Tutorial_3.newInstance(2, "Page # 3");
-                default:
-                    return null;
+    private void moveMainPage() {
+//        prefManager.setFirstTimeLaunch(false);
+        startActivity(new Intent(Tutorial.this, MainActivity.class));
+        finish();
+    }
+
+    ViewPager.OnPageChangeListener viewPagerPageChangeListener = new ViewPager.OnPageChangeListener() {
+
+        @Override
+        public void onPageSelected(int position) {
+            addBottomDots(position);
+
+//            다음 / 시작 버튼 바꾸기
+            if(position == 0) {
+                setting.setVisibility(View.VISIBLE);
+            } else if (position == layouts.length - 1) {
+//                마지막 페이지에서는 다음 버튼을 시작버튼으로 교체
+                btnNext.setText(getString(R.string.start)); // 다음 버튼을 시작버튼으로 글자 교체
+                btnSkip.setVisibility(View.GONE);
+                setting.setVisibility(View.GONE);
+            } else {
+//                마지막 페이지가 아니라면 다음과 건너띄기 버튼 출력
+                btnNext.setText(getString(R.string.next));
+                btnSkip.setVisibility(View.VISIBLE);
+                setting.setVisibility(View.GONE);
             }
         }
 
-        // Returns the page title for the top indicator
         @Override
-        public CharSequence getPageTitle(int position) {
-            return "Page " + position;
+        public void onPageScrolled(int arg0, float arg1, int arg2) {
+
         }
 
+        @Override
+        public void onPageScrollStateChanged(int arg0) {
+
+        }
+    };
+
+    private void changeStatusBarColor() { // 최상단 바 색 변경
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.TRANSPARENT);
+        }
     }
 
-    // 뒤로가기 버튼 클릭시 음성인식 재시작 필요
-    public void onBackPressed() {
-        Intent intent_main = new Intent(Tutorial.this, MainActivity.class);
-        startActivity(intent_main);
-    }
+    public class PagerAdapter extends androidx.viewpager.widget.PagerAdapter { // 아답터
+        private LayoutInflater layoutInflater;
 
-//    private void askPermission() {
-//        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-//                Uri.parse("package:" + getPackageName()));
-//        startActivityForResult(intent, SYSTEM_ALERT_WINDOW_PERMISSION);
-//    }
+        public PagerAdapter() {
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+            View view = layoutInflater.inflate(layouts[position], container, false);
+            container.addView(view);
+
+            return view;
+        }
+
+        @Override
+        public int getCount() {
+            return layouts.length;
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object obj) {
+            return view == obj;
+        }
+
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            View view = (View) object;
+            container.removeView(view);
+        }
+    }
 }

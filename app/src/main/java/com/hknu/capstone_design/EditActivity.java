@@ -4,13 +4,16 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
-//MainActivity을 import하여 public 객체들을 사용하고자함
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static com.hknu.capstone_design.MainActivity.PositionNumber;
 
 public class EditActivity extends AppCompatActivity implements View.OnClickListener {
@@ -44,24 +47,43 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+        //입력 받은 매크로 이름 저장
         String MacroName_Edit = EditName.getText().toString();
-        // 변경할 값, 조건
-        sql = "UPDATE Macro SET Mac_Name = (?) WHERE Mac_name is (?)";
-        String[] arg = {MacroName_Edit, result[PositionNumber]};
 
-        try{
-            db.execSQL(sql, arg);
-            Toast toast = Toast.makeText(getApplicationContext(), "수정되었습니다.", Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.LEFT|Gravity.BOTTOM, 330, 180);
-            toast.show();
-            Intent intent = new Intent(EditActivity.this, MainActivity.class);
-            startActivity(intent);
+        //todo : 정규식을 이용하여 변경할 이름들의 값과 조건을 검증한다.
+        //특수문자 포함 여부 확인
+        //한글을 제외한 영어, 숫자, 특수문자, 공백(띄어쓰기) 모두 제외
+        Pattern pattern = Pattern.compile("^[가-힣]*$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(MacroName_Edit);
+        boolean bool = matcher.find();
+        if (bool == false) {
+            Toast.makeText(this, "매크로 이름을 한글로만 설정해주세요.", Toast.LENGTH_SHORT).show();
+        } else {
+            //매크로 이름이 9글자 초과일 경우 오류 메시지
+            if (MacroName_Edit.length() > 9) {
+                Toast.makeText(this, "매크로 이름을 2~8글자로 설정해주세요.", Toast.LENGTH_SHORT).show();
+            }
+            //매크로 이름이 2글자 미만일 경우 오류 메시지
+            else if (MacroName_Edit.length() < 2) {
+                Toast.makeText(this, "매크로 이름을 2~8글자로 설정해주세요.", Toast.LENGTH_SHORT).show();
+            } else {
+                sql = "UPDATE Macro SET Mac_Name = (?) WHERE Mac_name is (?)";
+                String[] arg = {MacroName_Edit, result[PositionNumber]};
+
+                try {
+                    db.execSQL(sql, arg);
+                    Toast toast = Toast.makeText(getApplicationContext(), "수정되었습니다.", Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.LEFT | Gravity.BOTTOM, 330, 180);
+                    toast.show();
+                    Intent intent = new Intent(EditActivity.this, MainActivity.class);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Toast toast = Toast.makeText(getApplicationContext(), "오류발생", Toast.LENGTH_SHORT);
+                    Log.d("오류 발생", "매크로 이름 변경 오류 발생 지점");
+                    toast.show();
+                }
+            }
         }
-        catch (Exception e) {
-            Toast toast =Toast.makeText(getApplicationContext(), "오류발생", Toast.LENGTH_SHORT);
-            toast.show();
-        };
-
     }
 
     // Macro 테이블 조회 & 배열에 Mac_name 속성 삽입 메소드
@@ -80,16 +102,5 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
-
-//    public class GetPosition extends MainActivity{
-//        public int getposition() {
-//            int position = 0;
-//
-//
-//            return position;
-//
-//        }
-//    }
-
 
 }

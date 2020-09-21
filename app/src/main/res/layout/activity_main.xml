@@ -27,13 +27,12 @@
 
         <TextView
             android:id="@+id/textView"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_gravity="center"
+            android:gravity="center"
             android:text="내 매크로를 한 번에"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textSize="30sp" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
         <TextView
             android:id="@+id/textView2"

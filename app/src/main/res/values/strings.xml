@@ -2,9 +2,28 @@
     <string name="app_name">헤이요</string>
     <string name="textView2">내 매크로 이름 입력</string>
     <string name="EditMacroName">매크로 호출 명령어 이름을 입력해 주세요.</string>
-    <string name="textView5">한글 2자 이상 5자 이내 / 영문, 숫자, 특수기호 불가</string>
+    <string name="textView9">한글 2자 이상 9자 이내 / 영문, 숫자, 특수기호 불가</string>
     <string name="saveButton">저장</string>
 
     <string name="permission">터치 어시스턴트</string>
     <string name="hint">자동 터치 기능을 정상적으로 사용하려면 권한을 활성화하십시오.</string>
+
+
+<!--    ///////////////////////////////튜토리얼 문구////////////////////////////////////////-->
+
+    <string name="next">다음</string>
+    <string name="skip">건너뛰기</string>
+    <string name="start">시작</string>
+
+    <string name="page_1_title">첫번째 페이지입니다.</string>
+    <string name="page_1_desc">첫번째 페이지 내용입니다.</string>
+
+    <string name="page_2_title">두번째 페이지입니다.</string>
+    <string name="page_2_desc">두번째 페이지 내용입니다.</string>
+
+    <string name="page_3_title">세번째 페이지입니다.</string>
+    <string name="page_3_desc">세번째 페이지 내용입니다.</string>
+
+    <string name="page_4_title">네번째 페이지입니다.</string>
+    <string name="page_4_desc">네번째 페이지 내용입니다.</string>
 </resources>

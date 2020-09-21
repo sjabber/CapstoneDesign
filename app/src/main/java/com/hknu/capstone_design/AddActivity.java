@@ -95,11 +95,11 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
         } else {
             //매크로 이름이 9글자 초과일 경우 오류 메시지
             if (MacroName.length() > 9) {
-                Toast.makeText(this, "매크로 이름을 2~5글자로 설정해주세요.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "매크로 이름을 2~8글자로 설정해주세요.", Toast.LENGTH_SHORT).show();
             }
             //매크로 이름이 2글자 미만일 경우 오류 메시지
             else if (MacroName.length() < 2) {
-                Toast.makeText(this, "매크로 이름을 2~5글자로 설정해주세요.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "매크로 이름을 2~8글자로 설정해주세요.", Toast.LENGTH_SHORT).show();
             } else {
 
                 //현재 저장되어 있는 매크로 이름을 불러와서 리스트에 저장
