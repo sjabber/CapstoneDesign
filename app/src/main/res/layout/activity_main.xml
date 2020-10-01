@@ -16,7 +16,7 @@
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="match_parent"
-            android:layout_height="142dp"
+            android:layout_height="150dp"
             app:srcCompat="@drawable/first" />
     </LinearLayout>
 
@@ -32,14 +32,17 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:text="내 매크로를 한 번에"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+            android:fontFamily="@font/cookie"
+            android:textSize="30dp"
+            android:textColor="#000000" />
 
         <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
+            android:layout_marginLeft="10sp"
+            android:layout_marginRight="10sp"
+            android:fontFamily="@font/cookie"
             android:gravity="center"
             android:text="다양한 액션을 내 매크로에 등록하면 말 한마디로 여러가지 기능을 이용할 수 있습니다."
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -49,11 +52,11 @@
             android:id="@+id/button1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp"
+            android:layout_marginTop="3sp"
+            android:layout_marginLeft="30sp"
+            android:layout_marginRight="30sp"
+            android:paddingTop="3sp"
+            android:paddingBottom="3sp"
             android:background="#2F97EA"
             android:gravity="center"
             android:textSize="20sp"
@@ -63,12 +66,12 @@
         <EditText
             android:id="@+id/txtSystem"
             android:layout_width="match_parent"
-            android:layout_height="25dp"
+            android:layout_height="25sp"
             android:layout_gravity="center"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
+            android:layout_marginTop="5sp"
+            android:layout_marginBottom="5sp"
+            android:layout_marginLeft="30sp"
+            android:layout_marginRight="30sp"
             android:ems="10"
             android:inputType="textMultiLine|textPersonName"
             app:layout_constraintEnd_toEndOf="parent"
@@ -90,14 +93,15 @@
             android:id="@+id/Mac_List_Text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="15sp"
+            android:layout_marginTop="5sp"
+            android:layout_marginRight="20sp"
+            android:layout_marginBottom="8sp"
             android:inputType="textPersonName"
             android:text="내 매크로 목록"
             android:textAllCaps="false"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="#000000"
             android:textColorLink="#000000"
             android:textSize="25dp" />
 
@@ -110,7 +114,15 @@
             android:id="@+id/Mac_List"
             android:layout_width="match_parent"
             android:layout_height="match_parent"></ListView>
-
-
     </LinearLayout>
+
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        app:adSize="BANNER"
+        app:adUnitId="@string/banner_ad_unit_id">
+    </com.google.android.gms.ads.AdView>
 </LinearLayout>

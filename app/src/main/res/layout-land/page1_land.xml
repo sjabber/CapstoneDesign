@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#309ccd"
+    tools:ignore="MissingDefaultResource">
+
+    <LinearLayout
+        android:id="@+id/video"
+        android:layout_below="@+id/top1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/desc_padding"
+            android:paddingRight="@dimen/desc_padding"
+            android:text="음성호출 매크로"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/slide_desc"
+            android:fontFamily="@font/justbold"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="헤이요(Hey_Yo)"
+            android:textColor="@android:color/white"
+            android:textSize="28dp"
+            android:fontFamily="@font/justbold" />
+
+        <kr.co.prnd.YouTubePlayerView
+            android:id="@+id/youtubeView"
+            android:layout_marginTop="5sp"
+            android:layout_marginLeft="5sp"
+            android:layout_marginRight="5sp"
+            android:layout_width="500sp"
+            android:layout_height="200sp"
+            app:videoId="-8hD61G6ip0" />
+
+        <TextView
+            android:layout_marginTop="3sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/justbold"
+            android:gravity="center"
+            android:text="*앱 튜토리얼 영상입니다*"
+            android:textColor="@android:color/white"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_marginTop="3sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/justbold"
+            android:gravity="center"
+            android:text="크게 보시길 원하시면 영상의 YouTube 링크버튼을 눌러주세요"
+            android:textColor="@android:color/white"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10sp"
+            android:layout_marginLeft="5sp"
+            android:layout_marginRight="5sp"
+            android:fontFamily="@font/cookie"
+            android:paddingLeft="@dimen/desc_padding"
+            android:paddingRight="@dimen/desc_padding"
+            android:text="헤이요(Hey_Yo)는"
+            android:textAlignment="center"
+            android:background="@color/White"
+            android:textColor="#3E74C7"
+            android:textSize="25sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="5sp"
+            android:layout_marginRight="5sp"
+            android:fontFamily="@font/cookie"
+            android:text="인공지능 비서(ex. 빅스비)들이 알아듣지"
+            android:textAlignment="center"
+            android:background="@color/White"
+            android:textColor="#3E74C7"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="5sp"
+            android:layout_marginRight="5sp"
+            android:fontFamily="@font/cookie"
+            android:paddingLeft="@dimen/desc_padding"
+            android:paddingRight="@dimen/desc_padding"
+            android:text="못하는 명령들을 사용자가 직접 매크로로"
+            android:textAlignment="center"
+            android:background="@color/White"
+            android:textColor="#3E74C7"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="5sp"
+            android:layout_marginRight="5sp"
+            android:layout_marginBottom="15sp"
+            android:fontFamily="@font/cookie"
+            android:paddingLeft="@dimen/desc_padding"
+            android:paddingRight="@dimen/desc_padding"
+            android:text="설정, 등록하여 음성으로 호출하는 앱 입니다."
+            android:textAlignment="center"
+            android:background="@color/White"
+            android:textColor="#3E74C7"
+            android:textSize="16sp" />
+    </LinearLayout>
+</ScrollView>

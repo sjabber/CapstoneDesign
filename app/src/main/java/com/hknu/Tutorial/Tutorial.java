@@ -1,6 +1,9 @@
 package com.hknu.Tutorial;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,7 +31,9 @@ public class Tutorial extends AppCompatActivity {
     private LinearLayout dotsLayout;
     private TextView[] dots;
     private int[] layouts;
-    private Button btnSkip, btnNext, setting;
+    private Button btnSkip, btnNext, setting, access;
+    private int position_number;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +50,7 @@ public class Tutorial extends AppCompatActivity {
         btnSkip = findViewById(R.id.btn_skip);
         btnNext = findViewById(R.id.btn_next);
         setting = findViewById(R.id.settings);
-
+        access = findViewById(R.id.access);
 
 // 변화될 레이아웃들 주소
         layouts = new int[] {
@@ -55,10 +60,18 @@ public class Tutorial extends AppCompatActivity {
                 R.layout.page4,
                 R.layout.page5,
                 R.layout.page6};
-
         addBottomDots(0);
 
         changeStatusBarColor();
+
+
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && position_number == 0) {
+            //가로모드일 경우
+            layouts[0] = R.layout.page1_land;
+        } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT && position_number == 0) {
+            //세로모드일 경우
+            layouts[0] = R.layout.page1;
+        }
 
         pagerAdapter = new PagerAdapter();
         viewPager.setAdapter(pagerAdapter);
@@ -67,7 +80,17 @@ public class Tutorial extends AppCompatActivity {
         setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //설정 바로가기
                 Intent intent = new Intent(Settings.ACTION_SETTINGS);
+                startActivity(intent);
+            }
+        });
+
+        access.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //접근성 설정 바로가기
+                Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
                 startActivity(intent);
             }
         });
@@ -129,20 +152,42 @@ public class Tutorial extends AppCompatActivity {
         @Override
         public void onPageSelected(int position) {
             addBottomDots(position);
+            position_number = position;
 
 //            다음 / 시작 버튼 바꾸기
-            if(position == 0) {
-                setting.setVisibility(View.VISIBLE);
-            } else if (position == layouts.length - 1) {
-//                마지막 페이지에서는 다음 버튼을 시작버튼으로 교체
-                btnNext.setText(getString(R.string.start)); // 다음 버튼을 시작버튼으로 글자 교체
-                btnSkip.setVisibility(View.GONE);
-                setting.setVisibility(View.GONE);
-            } else {
-//                마지막 페이지가 아니라면 다음과 건너띄기 버튼 출력
+            if (position == 0) {
                 btnNext.setText(getString(R.string.next));
                 btnSkip.setVisibility(View.VISIBLE);
                 setting.setVisibility(View.GONE);
+                access.setVisibility(View.GONE);
+            }
+            else if(position == 3) {
+                //세로모드로 고정
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+                //4번째 페이지에서 설정 바로가기 버튼이 뜨도록 한다.
+                btnNext.setText(getString(R.string.next));
+                btnSkip.setVisibility(View.VISIBLE);
+                access.setVisibility(View.GONE);
+                setting.setVisibility(View.VISIBLE);
+            } else if (position == layouts.length - 1) {
+                //세로모드로 고정
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+                //마지막 페이지에서는 다음 버튼을 시작버튼으로 교체
+                btnNext.setText(getString(R.string.start)); // 다음 버튼을 시작버튼으로 글자 교체
+                btnSkip.setVisibility(View.GONE);
+                setting.setVisibility(View.GONE);
+                access.setVisibility(View.VISIBLE);
+            } else {
+                //세로모드로 고정
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+                //마지막 페이지가 아니라면 다음과 건너띄기 버튼 출력
+                btnNext.setText(getString(R.string.next));
+                btnSkip.setVisibility(View.VISIBLE);
+                setting.setVisibility(View.GONE);
+                access.setVisibility(View.GONE);
             }
         }
 

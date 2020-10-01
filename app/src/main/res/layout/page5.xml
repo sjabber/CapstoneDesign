@@ -1,40 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#3E74C7">
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:layout_alignParentBottom="false"
+android:background="#309ccd">
 
     <LinearLayout
+        android:id="@+id/top2"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:orientation="horizontal"/>
+
+    <LinearLayout
+    android:id="@+id/Linear"
+    android:layout_below="@+id/top2"
+    android:layout_width="match_parent"
+    android:layout_height="400dp"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/tutorial4" />
+</LinearLayout>
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:orientation="vertical"
+    android:layout_below="@+id/Linear">
+
+    <TextView
+        android:id="@+id/recommend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:layout_below="@+id/Linear"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
+        android:text="**필수사항**"
+        android:textColor="@color/White"
+        android:fontFamily="@font/cookie"
+        android:textSize="25dp" />
 
-        <ImageView
-            android:layout_width="@dimen/img_width_height"
-            android:layout_height="@dimen/img_width_height" />
-        <!--            android:src="@drawable/ic_battery_full_black_24dp" />-->
+    <TextView
+        android:layout_below="@+id/recommend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_gravity="center"
+        android:text="접근성 권한을 설정해야만 앱이 정상적으로"
+        android:fontFamily="@font/cookie"
+        android:gravity="center"
+        android:textSize="19dp"
+        android:textColor="@color/White"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="다섯번째 페이지입니다."
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/slide_title"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:paddingLeft="@dimen/desc_padding"
-            android:paddingRight="@dimen/desc_padding"
-            android:text="다섯번째 페이지 내용입니다."
-            android:textAlignment="center"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/slide_desc" />
-
+    <TextView
+        android:layout_below="@+id/recommend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_gravity="center"
+        android:text="작동하므로 꼭 설정해야만 합니다."
+        android:fontFamily="@font/cookie"
+        android:gravity="center"
+        android:textSize="19dp"
+        android:textColor="@color/White"/>
     </LinearLayout>
-
 </RelativeLayout>

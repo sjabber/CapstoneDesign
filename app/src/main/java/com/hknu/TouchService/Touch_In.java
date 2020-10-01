@@ -28,14 +28,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
-
 import java.text.DecimalFormat;
-
 import static com.hknu.capstone_design.TouchInput.touchPoint;
-//import static com.example.capstone_design.MainActivity.touchPoint2;
 import static com.hknu.capstone_design.MainActivity.Voices;
-
-
 
 // 직접적으로 화면에 터치를 가하는 서비스 클래스
 // 전역변수들 추후에 지역변수로 바꿀 수 있으면 변경하기
@@ -262,6 +257,4 @@ public class Touch_In extends AccessibilityService {
             mWindowManager.removeView(mFloatingView);
         }
     }
-
-
 }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:showIn="@layout/activity_tutorial"
-    android:background="#3E74C7">
+    android:background="#309ccd">
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/view_pager"
@@ -21,7 +21,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="@dimen/dots_margin_bottom"
         android:gravity="center"
-        android:orientation="horizontal"></LinearLayout>
+        android:orientation="horizontal"/>
 
     <View
         android:layout_width="match_parent"
@@ -55,7 +55,8 @@
         android:textColor="@android:color/white" />
 
     <Button
-        android:layout_marginTop="25sp"
+        android:visibility="gone"
+        android:layout_marginTop="35sp"
         android:id="@+id/settings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -64,6 +65,23 @@
         android:backgroundTint="#FFFFFF"
         android:clickable="true"
         android:text="설정 바로가기"
+        android:fontFamily="@font/ant"
+        android:textSize="21sp"
+        android:textColor="@color/White" />
+
+    <Button
+        android:visibility="gone"
+        android:layout_marginTop="35sp"
+        android:id="@+id/access"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:background="@null"
+        android:backgroundTint="#FFFFFF"
+        android:clickable="true"
+        android:text="접근성 바로가기"
+        android:fontFamily="@font/ant"
+        android:textSize="21sp"
         android:textColor="@color/White" />
 
 </RelativeLayout>

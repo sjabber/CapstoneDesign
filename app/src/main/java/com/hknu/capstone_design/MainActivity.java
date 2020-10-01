@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -43,6 +44,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 import android.content.ContentValues;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.hknu.Touch.TouchEvent;
 import com.hknu.TouchService.Touch_In;
 import com.hknu.Tutorial.Tutorial;
@@ -91,12 +96,23 @@ public class MainActivity extends AppCompatActivity {
     Handler handler,handler_stop;
     boolean speech_status;
 
+    //광고
+    private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         cThis = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //세로모드로 고정
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        //광고
+        MobileAds.initialize(this, getString(R.string.admob_app_id));
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
         //음성인식 권한 확인
         if (Build.VERSION.SDK_INT >= 23) {

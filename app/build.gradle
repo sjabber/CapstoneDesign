@@ -2,11 +2,19 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('C:\\Users\\Taeho\\Desktop\\CapstoneDesign_final\\app\\release\\capstone_key.jks')
+            keyAlias 'key'
+            storePassword '479321'
+            keyPassword '479321'
+        }
+    }
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        applicationId "com.example.capstone_design"
+        applicationId "com.hknu.capstone_designn"
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
@@ -40,8 +48,8 @@ dependencies {
     implementation "androidx.core:core-ktx:+"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'me.relex:circleindicator:1.2.2'
-
-
+    implementation 'com.google.android.gms:play-services-ads:18.0.0'
+    implementation 'kr.co.prnd:youtube-player-view:1.3.0'
 }
 repositories {
     mavenCentral()

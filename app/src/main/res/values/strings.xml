@@ -8,6 +8,10 @@
     <string name="permission">터치 어시스턴트</string>
     <string name="hint">자동 터치 기능을 정상적으로 사용하려면 권한을 활성화하십시오.</string>
 
+    <string name="admob_app_id">ca-app-pub-6739745569558356~1073304754</string>
+    <string name="banner_ad_unit_id">ca-app-pub-6739745569558356/5750916360</string>
+    <string name="banner_ad_unit_id_for_test">ca-app-pub-3940256099942544/6300978111</string>
+
 
 <!--    ///////////////////////////////튜토리얼 문구////////////////////////////////////////-->
 
