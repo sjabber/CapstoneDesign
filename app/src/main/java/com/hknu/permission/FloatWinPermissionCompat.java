@@ -28,8 +28,8 @@ public class FloatWinPermissionCompat {
     private FloatWinPermissionCompat() {
         // 6.0 버전 이후 처리
         if (Build.VERSION.SDK_INT < 23) {
-            if (RomUtils.isMeizu()) {
-                compat = new MeizuCompatImpl();
+            if (RomUtils.isMe()) {
+                compat = new Permission_Me();
             } else {
                 // Android6.0 다음 비 호환 모델은 기본적으로 구현됩니다.
                 compat = new BelowApi23CompatImpl() {
@@ -45,9 +45,8 @@ public class FloatWinPermissionCompat {
                 };
             }
         } else {
-            // Meizu는 별도로 적응
-            if (RomUtils.isMeizu()) {
-                compat = new MeizuCompatImpl();
+            if (RomUtils.isMe()) {
+                compat = new Permission_Me();
             } else {
                 // 6.0 버전 이후 구글이 플로팅 윈도우 권한 관리를 추가했기 때문에 방식이 통일되었습니다.
                 compat = new Api23CompatImpl();
@@ -55,20 +54,11 @@ public class FloatWinPermissionCompat {
         }
     }
 
-    /**
-     * 플로팅 뷰 권한이 켜져 있는지 확인
-     *
-     * @return
-     */
+    // 플로팅 뷰 권한 확인
     public boolean check(Context context) {
         return compat.check(context);
     }
 
-    /**
-     * 플로팅 뷰 부여 인터페이스 열기 지원 여부
-     *
-     * @return
-     */
     public boolean isSupported() {
         return compat.isSupported();
     }
@@ -101,51 +91,16 @@ public class FloatWinPermissionCompat {
 
 
     public interface CompatImpl {
-        /**
-         * 권한이 있는지 확인
-         *
-         * @param context
-         * @return
-         */
+
+        // 권한 확인
         boolean check(Context context);
 
-        /**
-         * @return
-         */
         boolean isSupported();
 
-        /**
-         * 접근 요청
-         *
-         * @param context
-         * @return
-         */
+        // 접근 요청
         boolean apply(Context context);
     }
 
-    /**
-     * 부동 창 권한 신청
-     *
-     * @return 인증 인터페이스를 성공적으로 열지 여부
-     */
-    public boolean apply(Context context) {
-        if (!isSupported()) {
-            return false;
-        }
-        forResult = false;
-        this.context = context;
-        return compat.apply(context);
-    }
-
-    public boolean apply(Activity activity) {
-        if (activity == null || !isSupported()) {
-            return false;
-        }
-        this.activity = activity;
-        this.context = activity.getApplicationContext();
-        forResult = true;
-        return compat.apply(context);
-    }
 
     public static final int REQUEST_CODE_SYSTEM_WINDOW = 1001;
     private Activity activity;

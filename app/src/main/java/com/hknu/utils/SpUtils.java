@@ -3,29 +3,19 @@ package com.hknu.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
-
 import com.hknu.Touch.TouchPoint;
-
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * SharedPreferences 도구 클래스
- */
+
+//SharedPreferences 도구 클래스
 public class SpUtils {
 
-    /**
-     * 휴대폰에 저장된 파일 이름
-     */
+    // 휴대폰에 저장된 파일 이름
     private static final String FILE_NAME = "share_date";
     private static final String KEY_TOUCH_LIST = "touch_list";
 
-    /**
-     * 데이터를 저장하려면 저장된 데이터의 특정 유형을 가져온 다음 유형에 따라 다른 저장 방법을 호출해야합니다.
-     * @param context
-     * @param key
-     * @param object
-     */
+     // 데이터를 저장하려면 저장된 데이터의 특정 유형을 가져온 다음 유형에 따라 다른 저장 방법을 호출해야함.
     public static void setParam(Context context , String key, Object object){
 
         String type = object.getClass().getSimpleName();
@@ -50,14 +40,7 @@ public class SpUtils {
         editor.apply();
     }
 
-
-    /**
-     * 데이터를 저장하는 방법을 가져오고, 기본값에 따라 저장된 데이터의 특정 유형을 가져온 다음 상대 방법을 호출하여 값을 가져옵니다.
-     * @param context
-     * @param key
-     * @param defaultObject
-     * @return
-     */
+     //데이터를 저장하는 방법을 가져오고, 기본값에 따라 저장된 데이터의 특정 유형을 가져온 다음 상대 방법을 호출하여 값을 가져옵니다.
     public static Object getParam(Context context , String key, Object defaultObject){
         String type = defaultObject.getClass().getSimpleName();
         SharedPreferences sp = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
@@ -83,29 +66,6 @@ public class SpUtils {
         }
 
         return null;
-    }
-
-    /**
-     * 모든 데이터 지우기
-     * @param context
-     */
-    public static void clear(Context context) {
-        SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
-                Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.clear().apply();
-    }
-
-    /**
-     * 지정된 데이터 지우기
-     * @param context
-     */
-    public static void clearAll(Context context) {
-        SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
-                Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.remove("定义的键名");
-        editor.apply();
     }
 
     public static void addTouchPoint(Context context, TouchPoint touchPoint) {

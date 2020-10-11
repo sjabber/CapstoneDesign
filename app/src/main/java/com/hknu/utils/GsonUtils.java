@@ -16,13 +16,6 @@ public class GsonUtils {
         gson = new Gson();
     }
 
-    public static <T> T jsonToBean(String gsonString, Class<T> cls) {
-        T t = null;
-        if (gson != null) {
-            t = gson.fromJson(gsonString, cls);
-        }
-        return t;
-    }
 
     public static String beanToJson(Object object) {
         String gsonString = null;
