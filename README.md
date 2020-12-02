@@ -3,7 +3,7 @@
 
 ### 사용자가 저장한 터치작업들을 음성호출을 사용하여 순차적으로 실행시키는 앱
 - 유튜브 튜토리얼 링크 https://youtu.be/-8hD61G6ip0
-- 유튜브 개발자 시연영상 링크 https://www.youtube.com/watch?v=jA8BIdwPn8c
+- 시연영상 링크 https://www.youtube.com/watch?v=jA8BIdwPn8c
 
 
 
