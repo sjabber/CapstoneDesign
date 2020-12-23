@@ -3,7 +3,7 @@
 
 ### 사용자가 저장한 터치작업들을 음성호출을 사용하여 순차적으로 실행시키는 앱
 - 유튜브 튜토리얼 링크 https://youtu.be/-8hD61G6ip0
-- 유튜브 개발자 시연영상 링크 https://www.youtube.com/watch?v=jA8BIdwPn8c
+- 시연영상 링크 https://www.youtube.com/watch?v=jA8BIdwPn8c
 
 
 
@@ -18,14 +18,18 @@
 
 
 #### 사용설명서
--------------------------------
-- 앱 로딩화면
+------------------------------
+- 앱 로딩화면 이미지
 
-![image](https://user-images.githubusercontent.com/46473153/93459946-7d503e00-f91d-11ea-8793-821c1b252f5f.png)
+
+<img src="https://user-images.githubusercontent.com/46473153/100839494-a82b4680-34b7-11eb-9bb4-09eb41c17eb1.png" width="250" height="250">
+
 
 - 튜토리얼 화면
 
-추후 추가예정입니다.
+
+<img src="https://user-images.githubusercontent.com/46473153/100839973-7bc3fa00-34b8-11eb-8cab-31176b4356ff.png" width="250" height="450"> <img src="https://user-images.githubusercontent.com/46473153/100840067-add55c00-34b8-11eb-8d3c-c4f2f4ed9f2f.png" width="250" height="450">
+
 
 - 권한 및 설정
 
