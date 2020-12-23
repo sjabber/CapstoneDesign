@@ -5,6 +5,7 @@
         <item name="colorPrimary">#5ac8fa</item>
         <item name="colorPrimaryDark">#309ccd</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:itemBackground">#f2feff</item>
     </style>
 
     <!-- 투명 스타일 설정 -->

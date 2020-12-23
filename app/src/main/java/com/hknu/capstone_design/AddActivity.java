@@ -100,63 +100,63 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
         //todo : 2020.09.03 추가된 부분
         //음성인식 종료
 
-        //입력 받은 매크로 이름 저장
-        String MacroName = EditName.getText().toString();
+                        //입력 받은 매크로 이름 저장
+                        String MacroName = EditName.getText().toString();
 
-        //todo : 정규식을 이용하여 입력받는 이름들을 검증한다.
-        //특수문자 포함 여부 확인
-        //한글을 제외한 영어, 숫자, 특수문자, 공백(띄어쓰기) 모두 제외
-        Pattern pattern = Pattern.compile("^[가-힣]*$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(MacroName);
-        boolean bool = matcher.find();
-        if (bool == false) {
-            Toast.makeText(this, "매크로 이름을 한글로만 설정해주세요.", Toast.LENGTH_SHORT).show();
-        } else {
-            //매크로 이름이 9글자 초과일 경우 오류 메시지
-            if (MacroName.length() > 9) {
-                Toast.makeText(this, "매크로 이름을 2~8글자로 설정해주세요.", Toast.LENGTH_SHORT).show();
-            }
-            //매크로 이름이 2글자 미만일 경우 오류 메시지
-            else if (MacroName.length() < 2) {
-                Toast.makeText(this, "매크로 이름을 2~8글자로 설정해주세요.", Toast.LENGTH_SHORT).show();
-            } else {
+                        //todo : 정규식을 이용하여 입력받는 이름들을 검증한다.
+                        //특수문자 포함 여부 확인
+                        //한글을 제외한 영어, 숫자, 특수문자, 공백(띄어쓰기) 모두 제외
+                        Pattern pattern = Pattern.compile("^[가-힣]*$", Pattern.CASE_INSENSITIVE);
+                        Matcher matcher = pattern.matcher(MacroName);
+                        boolean bool = matcher.find();
+                        if (bool == false) {
+                            Toast.makeText(this, "매크로 이름을 한글로만 설정해주세요.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            //매크로 이름이 9글자 초과일 경우 오류 메시지
+                            if (MacroName.length() > 9) {
+                                Toast.makeText(this, "매크로 이름을 2~8글자로 설정해주세요.", Toast.LENGTH_SHORT).show();
+                            }
+                            //매크로 이름이 2글자 미만일 경우 오류 메시지
+                            else if (MacroName.length() < 2) {
+                                Toast.makeText(this, "매크로 이름을 2~8글자로 설정해주세요.", Toast.LENGTH_SHORT).show();
+                            } else {
 
-                //현재 저장되어 있는 매크로 이름을 불러와서 리스트에 저장
-                Cursor c1 = db.rawQuery("SELECT Mac_name from Macro", null);
-                ArrayList<String> Mac_name_list = new ArrayList<>();
-                while (c1.moveToNext()) {
-                    String str_load = c1.getString(0);
-                    //DB에서 불러오는 매크로 이름에서 공백 제거 : 위에서 공백을 허용 안 함으로 주석처리
-                    //str_load = str_load.replaceAll(" ", "");
-                    Mac_name_list.add(str_load);
-                }
+                                //현재 저장되어 있는 매크로 이름을 불러와서 리스트에 저장
+                                Cursor c1 = db.rawQuery("SELECT Mac_name from Macro", null);
+                                ArrayList<String> Mac_name_list = new ArrayList<>();
+                                while (c1.moveToNext()) {
+                                    String str_load = c1.getString(0);
+                                    //DB에서 불러오는 매크로 이름에서 공백 제거 : 위에서 공백을 허용 안 함으로 주석처리
+                                    //str_load = str_load.replaceAll(" ", "");
+                                    Mac_name_list.add(str_load);
+                                }
 
-                //저장된 매크로가 하나도 없을 경우에 매크로 이름 비교 없이 바로 생성
-                if (Mac_name_list.size() == 0) {
-                    //입력한 매크로 이름에서 공백 제거 : 공백허용을 안 함으로 주석처리
-                    String str_save = MacroName;
-                    str_save = str_save.replaceAll(" ", "");
-                    System.out.println(str_save);
+                                //저장된 매크로가 하나도 없을 경우에 매크로 이름 비교 없이 바로 생성
+                                if (Mac_name_list.size() == 0) {
+                                    //입력한 매크로 이름에서 공백 제거 : 공백허용을 안 함으로 주석처리
+                                    String str_save = MacroName;
+                                    str_save = str_save.replaceAll(" ", "");
+                                    System.out.println(str_save);
 
-                    //입력받은 값을 Macro 테이블 Mac_name 애트리뷰트에 추가한다.
-                    inputedName = MacroName;
+                                    //입력받은 값을 Macro 테이블 Mac_name 애트리뷰트에 추가한다.
+                                    inputedName = MacroName;
 
-                    //홈화면으로 이동시킴
-                    Intent home = new Intent(Intent.ACTION_MAIN);
-                    home.addCategory(Intent.CATEGORY_HOME);
-                    home.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(home);
+                                    //홈화면으로 이동시킴
+                                    Intent home = new Intent(Intent.ACTION_MAIN);
+                                    home.addCategory(Intent.CATEGORY_HOME);
+                                    home.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(home);
 
-                    SystemClock.sleep(250);
-                    startActivity(home);
+                                    SystemClock.sleep(250);
+                                    startActivity(home);
 
 
-                    // 버튼이 눌리면 위의 작업과 함께 Floatting window도 실행된다.
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                        //홈 화면으로 이동한다.
-                        startService(new Intent(AddActivity.this, FloatingViewService.class));
-                        MA.finish();
-                        finish();
+                                    // 버튼이 눌리면 위의 작업과 함께 Floatting window도 실행된다.
+                                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                                        //홈 화면으로 이동한다.
+                                        startService(new Intent(AddActivity.this, FloatingViewService.class));
+                                        MA.finish();
+                                        finish();
                     } else if (Settings.canDrawOverlays(this)) {
                         //홈 화면으로 이동한다.
                         startService(new Intent(AddActivity.this, FloatingViewService.class));

@@ -67,7 +67,7 @@ public class Tutorial extends AppCompatActivity {
 
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && position_number == 0) {
             //가로모드일 경우
-            layouts[0] = R.layout.page1_land;
+            layouts[0] = R.layout.page1;
         } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT && position_number == 0) {
             //세로모드일 경우
             layouts[0] = R.layout.page1;

@@ -15,6 +15,8 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -882,7 +884,7 @@ public class MainActivity extends AppCompatActivity {
                 android.os.Process.killProcess(android.os.Process.myPid());
                 //앱을 종료한다.
             } else if(!Macro.containsKey(Voices) && Voices.equals("재시작")) {
-                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.example.capstone_design");
+                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.hknu.capstone_design");
                 startActivity(launchIntent);
 
                 Toast toast = Toast.makeText(MainActivity.this, "앱을 재실행 시킵니다.", Toast.LENGTH_SHORT);
@@ -993,6 +995,4 @@ public class MainActivity extends AppCompatActivity {
         alBuilder.setTitle("프로그램 종료");
         alBuilder.show(); // AlertDialog.Bulider로 만든 AlertDialog를 보여준다.
     }
-
-
 }
