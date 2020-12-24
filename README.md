@@ -16,29 +16,20 @@
 <img src="https://user-images.githubusercontent.com/46473153/103106580-03e18d80-467a-11eb-84df-feb02aff509c.png" width="550" height="330">
 
 ## 사용설명서
-- 앱 로딩화면 이미지
-
-<img src="https://user-images.githubusercontent.com/46473153/100839494-a82b4680-34b7-11eb-9bb4-09eb41c17eb1.png" width="250" height="250">
-
-
-- 튜토리얼 화면
-
-<img src="https://user-images.githubusercontent.com/46473153/100839973-7bc3fa00-34b8-11eb-8cab-31176b4356ff.png" width="250" height="450"> <img src="https://user-images.githubusercontent.com/46473153/100840067-add55c00-34b8-11eb-8d3c-c4f2f4ed9f2f.png" width="250" height="450">
-
-
 - 권한 및 설정
 
-앱을 시작하면 음성인식과 다른 앱 위에 표시 권한을 요청한다. 이후 메인화면으로 넘어가
-파란색의 시작하기 버튼을 누르면 이런 접근성 설정 화면이 나온다.
+앱을 시작하면 음성인식과 다른 앱 위에 표시 권한을 요청한다. <br>
+이후 메인화면으로 넘어가 파란색의 시작하기 버튼을 누르면 이런 접근성 설정 화면이 나온다.
 
-<img src="https://user-images.githubusercontent.com/46473153/93813501-2d130c00-fc8e-11ea-8e08-c3c340cb84a4.png" width="250" height="400">
+<img src="https://user-images.githubusercontent.com/46473153/93813501-2d130c00-fc8e-11ea-8e08-c3c340cb84a4.png" width="200" height="360">
 
 사진에 표시된 화면의 설치된 서비스 항목을 누르면 터치 어시스턴트 권한을 얻을 수 있게되어
 앱을 정상적으로 사용할 수 있게 된다.
 
 - 사용법 & 튜토리얼
-유튜브 튜토리얼 링크 (https://youtu.be/-8hD61G6ip0)
-시연영상 링크 (https://www.youtube.com/watch?v=jA8BIdwPn8c)
+
+유튜브 튜토리얼 링크 (https://youtu.be/-8hD61G6ip0) <br>
+시연영상 링크 (https://www.youtube.com/watch?v=jA8BIdwPn8c) <br>
 
 ## Dependencies
 - 본 프로그램은 PRNDcompany의 YouTubePlayerView 라이브러리를 사용합니다. (https://github.com/PRNDcompany/YouTubePlayerView)
