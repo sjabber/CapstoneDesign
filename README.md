@@ -9,11 +9,8 @@
 빅스비(Bixby)나 구글 어시스턴트(Google Assistant)를 사용하게 되는데, 이 둘이 알아듣지 못하는 행동들을
 직접 매크로로 지정해서 호출하면 좋겠다는 생각에 착안하여 개발하게 되었다.
 
-## 시스템 구조
-<img src="https://user-images.githubusercontent.com/46473153/103106599-1c51a800-467a-11eb-8239-e4eb4092b2eb.png" width="550" height="280">
-
-## 동작 프로세스
-<img src="https://user-images.githubusercontent.com/46473153/103106580-03e18d80-467a-11eb-84df-feb02aff509c.png" width="550" height="330">
+## 시스템 구조 & 동작 프로세스
+<img src="https://https://user-images.githubusercontent.com/46473153/106828829-490fcb00-66ce-11eb-9c70-f690edaafb79.png" width="550" height="330">
 
 ## 사용설명서
 - 권한 및 설정
