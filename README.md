@@ -10,7 +10,7 @@
 직접 매크로로 지정해서 호출하면 좋겠다는 생각에 착안하여 개발하게 되었다.
 
 ## 시스템 구조 & 동작 프로세스
-<img src="https://https://user-images.githubusercontent.com/46473153/106828829-490fcb00-66ce-11eb-9c70-f690edaafb79.png" width="550" height="330">
+![image](https://user-images.githubusercontent.com/46473153/106828829-490fcb00-66ce-11eb-9c70-f690edaafb79.png)
 
 ## 사용설명서
 - 권한 및 설정
